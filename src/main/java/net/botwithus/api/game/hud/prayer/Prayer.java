@@ -8,6 +8,11 @@ public final class Prayer {
     private Prayer() {
     }
 
+    public enum PrayerBook {
+        NORMAL,
+        CURSES
+    }
+
     /**
      * Checks if the Quick Prayer toggle is active.
      *
@@ -44,6 +49,21 @@ public final class Prayer {
      */
     public static int getMaxPrayerPoints() {
         return Skills.PRAYER.getActualLevel() * 10;
+    }
+
+    /**
+     * Returns the player's current prayer book
+     *
+     * @return the player's current prayer book
+     */
+    public static PrayerBook getCurrentBook() {
+        int prayerBookEquipped = VarManager.getVarbitValue(16789);
+
+        return switch (prayerBookEquipped) {
+            case 0 -> PrayerBook.NORMAL;
+            case 1 -> PrayerBook.CURSES;
+            default -> null;
+        };
     }
 
 //    /**
