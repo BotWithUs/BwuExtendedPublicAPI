@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "net.botwithus.xapi"
-version = "1.0.0-SNAPSHOT"
+version = "1.0.2"
 
 repositories {
     mavenLocal()
@@ -53,7 +53,11 @@ tasks.getByName<Test>("test") {
 publishing {
     repositories {
         maven {
-            url = uri("https://nexus.botwithus.net/repository/maven-snapshots/")
+            url = if (project.version.toString().endsWith("SNAPSHOT")) {
+                uri("https://nexus.botwithus.net/repository/maven-snapshots/")
+            } else {
+                uri("https://nexus.botwithus.net/repository/maven-releases/")
+            }
             credentials {
                 username = System.getenv("MAVEN_REPO_USER")
                 password = System.getenv("MAVEN_REPO_PASS")
@@ -64,8 +68,8 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "net.botwithus.xapi.public"
             artifactId = "api"
-            version = "1.0.0-SNAPSHOT"
-            from(components.getByName("java"))
+            version = project.version.toString()
+            from(components["java"])
         }
     }
 }

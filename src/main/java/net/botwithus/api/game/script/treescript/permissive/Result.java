@@ -29,7 +29,7 @@ public class Result<T> {
         return result;
     }
 
-    public ResultType getBooleanResultType() {
+    public ResultType getResultType() {
         return !isValidResult() ? ResultType.EXPIRED : ResultType.getResult((boolean)result);
     }
 }

@@ -49,9 +49,10 @@ public class Dialog {
             var result = ComponentQuery.newQuery(1188).type(4).text(optionText, String::contentEquals).results().first();
             if (result != null) {
                 int slot = -1;
-                int size = getOptions().size();
+                var options = getOptions();
+                int size = options.size();
                 for (int i = 0; i < size; i++) {
-                    if (getOptions().get(i).contains(optionText)) {
+                    if (options.get(i).contains(optionText)) {
                         slot = i;
                     }
                 }

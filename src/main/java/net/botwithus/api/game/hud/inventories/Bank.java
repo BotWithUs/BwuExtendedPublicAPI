@@ -13,6 +13,7 @@ import net.botwithus.rs3.game.queries.builders.components.ComponentQuery;
 import net.botwithus.rs3.game.queries.builders.items.InventoryItemQuery;
 import net.botwithus.rs3.game.queries.builders.objects.SceneObjectQuery;
 import net.botwithus.rs3.script.Execution;
+import net.botwithus.rs3.script.ScriptConsole;
 import net.botwithus.rs3.util.RandomGenerator;
 import net.botwithus.rs3.game.vars.VarManager;
 
@@ -116,7 +117,7 @@ public class Bank {
 //                .map(Component::doAction)
 //                .orElse(false);
         // TODO: Update to no longer use MiniMenu.doAction
-        return MiniMenu.interact(ComponentAction.COMPONENT.getType(), 1, -1, 33882418);
+        return MiniMenu.interact(ComponentAction.COMPONENT.getType(), 1, -1, 33882430);
     }
 
     public static boolean loadLastPreset() {
@@ -221,6 +222,11 @@ public class Bank {
     public static boolean withdraw(InventoryItemQuery query, int option) {
         setTransferOption(TransferOptionType.ALL);
         Item item = query.results().first();
+        if (item != null) {
+            ScriptConsole.println("Item: " + item.toString());
+        } else {
+            ScriptConsole.println("Item is null");
+        }
         return item != null && BANK.interact(item.getSlot(), option);
     }
 
