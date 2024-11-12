@@ -5,6 +5,7 @@ import net.botwithus.rs3.game.hud.interfaces.Interfaces;
 import net.botwithus.rs3.game.minimenu.MiniMenu;
 import net.botwithus.rs3.game.minimenu.actions.ComponentAction;
 import net.botwithus.rs3.game.queries.builders.components.ComponentQuery;
+import net.botwithus.rs3.game.queries.results.ResultSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class Dialog {
     public static boolean isOpen() {
@@ -34,12 +36,29 @@ public class Dialog {
     @NotNull
     public static List<String> getOptions() {
         if (Interfaces.isOpen(1188)) {
-            List<String> options = new ArrayList<>(ComponentQuery.newQuery(1188).componentIndex(6,33,35,37,39).type(4).results().stream().map(Component::getText).toList());
-            options.removeIf(result -> result.getBytes(StandardCharsets.UTF_8).length < 3);
+            List<String> options = new ArrayList<>(ComponentQuery.newQuery(1188).componentIndex(6,33,35,37,39)
+                    .type(Component.Type.TEXT.getOpcode())
+                    .results()
+                    .stream()
+                    .map(Component::getText)
+                    .filter(text -> text.getBytes(StandardCharsets.UTF_8).length >= 3).toList());
             return options;
         }
         return Collections.emptyList();
     }
+
+    public static List<Component> getOptionComponents() {
+        if (Interfaces.isOpen(1188)) {
+            return ComponentQuery.newQuery(1188).componentIndex(6,33,35,37,39)
+                    .type(Component.Type.TEXT.getOpcode())
+                    .results()
+                    .stream()
+                    .filter(component -> component.getText().getBytes(StandardCharsets.UTF_8).length >= 3)
+                    .toList();
+        }
+        return Collections.emptyList();
+    }
+
     public static boolean hasOption(String string) {
         return getOptions().stream().anyMatch(i -> i.contentEquals(string));
     }
@@ -58,6 +77,27 @@ public class Dialog {
                 }
                 return interact(slot);
             }
+        }
+        return false;
+    }
+
+    public static boolean interact(Pattern textPattern) {
+        if (Interfaces.isOpen(1188)) {
+            ResultSet<Component> parents = null;
+            for (var option : getOptionComponents()) {
+                if (textPattern.matcher(option.getText()).matches()) {
+                    parents = ComponentQuery.select(option.getInterfaceIndex(), option.getParentComponentIndex());
+                    break;
+                }
+            }
+
+            Component parent;
+            if (parents != null && (parent = parents.first()) != null) {
+                ComponentQuery.selectInteractableFrom(parent)
+                        .ifPresent(Component::interact);
+                return true;
+            }
+            return false;
         }
         return false;
     }
