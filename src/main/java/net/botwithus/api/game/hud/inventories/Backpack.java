@@ -184,4 +184,19 @@ public final class Backpack {
     public static int getCount(Pattern pattern) {
         return BACKPACK.getCount(pattern);
     }
+
+    /**
+     * Retrieves the item located in a specific slot in the backpack.
+     *
+     * @param slot The slot index to retrieve the item from.
+     * @return The {@link Item} located in the specified slot, or {@code null} if the slot is empty.
+     */
+
+    public static Item getSlot(int slot) {
+        return BACKPACK.getItems().stream()
+                .filter(item -> item.getSlot() == slot)
+                .findFirst()
+                .orElse(null);
+    }
+
 }
