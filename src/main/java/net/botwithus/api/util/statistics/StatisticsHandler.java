@@ -19,11 +19,11 @@ public class StatisticsHandler {
 
     private final Gson gson = new Gson();
     private final File historyFile;
-    private StatisticsHistory statisticsHistory;
+    private final Skill trackedSkill;
     private Instant startTime;
     private int startingXp;
+    private StatisticsHistory statisticsHistory;
     private final Map<String, Integer> customCounters = new HashMap<>();
-    private final Skill trackedSkill;
 
     /**
      * Constructs a StatisticsHandler with a specific history file path and optional skill tracking.
@@ -32,11 +32,43 @@ public class StatisticsHandler {
      * @param trackedSkill    The skill to track experience for, or null if no skill tracking is needed.
      */
     public StatisticsHandler(String historyFilePath, Skill trackedSkill) {
-        this.historyFile = new File(historyFilePath);
-        this.trackedSkill = trackedSkill;
-        this.startTime = Instant.now();
-        this.startingXp = trackedSkill != null ? trackedSkill.getExperience() : 0;
-        this.statisticsHistory = loadStatisticsHistory();
+        File tempHistoryFile;
+        Skill tempTrackedSkill;
+
+        try {
+            System.out.println("Initializing StatisticsHandler...");
+
+            // Assign history file (conditionally initialize)
+            tempHistoryFile = new File(historyFilePath);
+            System.out.println("History file path: " + tempHistoryFile.getAbsolutePath());
+
+            // Assign tracked skill
+            tempTrackedSkill = trackedSkill;
+            System.out.println("Tracked skill: " + (tempTrackedSkill != null ? tempTrackedSkill.toString() : "null"));
+
+            // Set start time and starting experience
+            this.startTime = Instant.now();
+            this.startingXp = tempTrackedSkill != null ? tempTrackedSkill.getExperience() : 0;
+            System.out.println("Starting XP: " + this.startingXp);
+
+            // Load statistics history
+            this.statisticsHistory = loadStatisticsHistory();
+            System.out.println("StatisticsHandler initialized successfully.");
+
+        } catch (Throwable t) {
+            System.err.println("Error initializing StatisticsHandler: " + t.getMessage());
+            t.printStackTrace();
+
+            // Fallback values
+            tempHistoryFile = new File("default_statistics.json");
+            tempTrackedSkill = null; // No skill tracking on error
+            this.statisticsHistory = new StatisticsHistory();
+            this.startingXp = 0; // Reset XP in case of failure
+        }
+
+        // Final assignments
+        this.historyFile = tempHistoryFile;
+        this.trackedSkill = tempTrackedSkill;
     }
 
     /**
@@ -127,7 +159,6 @@ public class StatisticsHandler {
                 sessionMetrics
         );
     }
-
 
     /**
      * Finalizes the current session and saves its data.
