@@ -20,6 +20,7 @@ import java.util.Arrays;
 
 public final class Smithing {
     private Smithing() {
+
     }
 
     /**
