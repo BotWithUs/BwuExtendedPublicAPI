@@ -11,17 +11,6 @@ import java.util.Optional;
  */
 public class Coordinates {
 
-    private final boolean debugEnabled;
-
-    /**
-     * Constructor to initialize the Coordinates class with optional debug logging.
-     *
-     * @param debugEnabled Enables or disables debug logging.
-     */
-    public Coordinates(boolean debugEnabled) {
-        this.debugEnabled = debugEnabled;
-    }
-
     /**
      * Checks if the player is currently at the specified coordinate.
      *
@@ -34,18 +23,7 @@ public class Coordinates {
         Coordinate targetCoordinate = new Coordinate(x, y, z);
         Coordinate playerCoordinate = getPlayerCoordinate().orElse(null);
 
-        boolean result = targetCoordinate.equals(playerCoordinate);
-
-        if (debugEnabled) {
-            logDebug("Checking if player is at coordinates: (" + x + ", " + y + ", " + z + ")");
-            if (result) {
-                logDebug("Player is at the target coordinates.");
-            } else {
-                logDebug("Player is not at the target coordinates.");
-            }
-        }
-
-        return result;
+        return targetCoordinate.equals(playerCoordinate);
     }
 
     /**
@@ -62,23 +40,11 @@ public class Coordinates {
         Coordinate playerCoordinate = getPlayerCoordinate().orElse(null);
 
         if (playerCoordinate == null) {
-            logWarning("Player's coordinate is unavailable. Cannot determine proximity.");
             return false;
         }
 
         double distance = calculateDistance(playerCoordinate, center);
-        boolean result = distance <= radius;
-
-        if (debugEnabled) {
-            logDebug("Checking if player is within radius " + radius + " of (" + centerX + ", " + centerY + ", " + centerZ + ")");
-            if (result) {
-                logDebug("Player is within " + radius + " units of the center.");
-            } else {
-                logDebug("Player is outside the " + radius + " unit radius.");
-            }
-        }
-
-        return result;
+        return distance <= radius;
     }
 
     /**
@@ -93,15 +59,7 @@ public class Coordinates {
      * @return True if the player is within the rectangle, false otherwise.
      */
     public boolean isPlayerWithinSquare(int playerX, int playerY, int minX, int minY, int maxX, int maxY) {
-        boolean result = playerX >= minX && playerX <= maxX && playerY >= minY && playerY <= maxY;
-
-        if (debugEnabled) {
-            logDebug("Checking if player is within square boundaries:");
-            logDebug("Min: (" + minX + ", " + minY + "), Max: (" + maxX + ", " + maxY + ")");
-            logDebug(result ? "Player is within the boundaries." : "Player is outside the boundaries.");
-        }
-
-        return result;
+        return playerX >= minX && playerX <= maxX && playerY >= minY && playerY <= maxY;
     }
 
     /**
@@ -130,34 +88,9 @@ public class Coordinates {
      * Validates a coordinate to ensure it is not null.
      *
      * @param coordinate   The coordinate to validate.
-     * @param errorMessage The error message to log if validation fails.
      * @return True if the coordinate is valid, false otherwise.
      */
-    public boolean validateCoordinate(Coordinate coordinate, String errorMessage) {
-        if (coordinate == null) {
-            logWarning(errorMessage);
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Logs debug messages if debug is enabled.
-     *
-     * @param message The debug message.
-     */
-    private void logDebug(String message) {
-        if (debugEnabled) {
-            System.out.println("[DEBUG] " + message); // Replace with your logger as necessary
-        }
-    }
-
-    /**
-     * Logs warnings regardless of the debug mode.
-     *
-     * @param message The warning message.
-     */
-    private void logWarning(String message) {
-        System.out.println("[WARNING] " + message); // Replace with your logger as necessary
+    public boolean validateCoordinate(Coordinate coordinate) {
+        return coordinate != null;
     }
 }
