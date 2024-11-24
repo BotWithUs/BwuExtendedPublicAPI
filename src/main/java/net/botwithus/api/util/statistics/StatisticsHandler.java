@@ -2,8 +2,6 @@ package net.botwithus.api.util.statistics;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import net.botwithus.api.util.statistics.SessionStatistics;
-import net.botwithus.api.util.statistics.StatisticsHistory;
 import net.botwithus.rs3.game.skills.Skill;
 
 import java.io.File;
@@ -17,21 +15,21 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Statistics {
+public class StatisticsHandler {
 
     private final Gson gson = new Gson();
     private final File historyFile;
-    private final StatisticsHistory statisticsHistory;
+    private StatisticsHistory statisticsHistory;
     private Instant startTime;
     private int startingXp;
     private final Map<String, Integer> customCounters = new HashMap<>();
     private final Skill trackedSkill;
 
     /**
-     * Constructs a StatisticsHandler with a specific history file path and skill to track.
+     * Constructs a StatisticsHandler with a specific history file path and optional skill tracking.
      *
      * @param historyFilePath Path to the statistics history file.
-     * @param trackedSkill    The skill whose XP to track (optional).
+     * @param trackedSkill    The skill to track experience for, or null if no skill tracking is needed.
      */
     public StatisticsHandler(String historyFilePath, Skill trackedSkill) {
         this.historyFile = new File(historyFilePath);
@@ -61,12 +59,10 @@ public class Statistics {
 
     /**
      * Saves the statistics history back to the JSON file.
-     *
-     * @param history The StatisticsHistory to save.
      */
-    private void saveStatisticsHistory(StatisticsHistory history) {
+    private void saveStatisticsHistory() {
         try (FileWriter writer = new FileWriter(historyFile)) {
-            gson.toJson(history, writer);
+            gson.toJson(statisticsHistory, writer);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -78,20 +74,15 @@ public class Statistics {
      * @param sessionStats The session statistics to add.
      */
     public void addNewSession(SessionStatistics sessionStats) {
-        StatisticsHistory history = loadStatisticsHistory();
-        history.setTotalLogsChopped(history.getTotalLogsChopped() + sessionStats.getLogsChopped());
-        history.setTotalXpGained(history.getTotalXpGained() + sessionStats.getXpGained());
-        history.setTotalBankingTrips(history.getTotalBankingTrips() + sessionStats.getBankingTrips());
-        history.setTotalRuntime(history.getTotalRuntime().plus(sessionStats.getRuntime()));
-        history.getSessions().add(sessionStats);
-        saveStatisticsHistory(history);
+        statisticsHistory.addSession(sessionStats);
+        saveStatisticsHistory();
     }
 
     /**
      * Increments a custom counter by a specified amount.
      *
      * @param counterName The name of the counter.
-     * @param amount      The amount to increment by (default is 1).
+     * @param amount      The amount to increment by.
      */
     public void incrementCounter(String counterName, int amount) {
         customCounters.put(counterName, customCounters.getOrDefault(counterName, 0) + amount);
@@ -126,15 +117,17 @@ public class Statistics {
         Duration runtime = Duration.between(startTime, endTime);
         int xpGained = trackedSkill != null ? trackedSkill.getExperience() - startingXp : 0;
 
+        // Include xpGained in the metrics map
+        Map<String, Integer> sessionMetrics = new HashMap<>(customCounters);
+        sessionMetrics.put("xpGained", xpGained);
+
         return new SessionStatistics(
                 LocalDateTime.now().minus(runtime),
                 LocalDateTime.now(),
-                getCounterValue("logsChopped"),
-                xpGained,
-                getCounterValue("bankingTrips"),
-                runtime
+                sessionMetrics
         );
     }
+
 
     /**
      * Finalizes the current session and saves its data.
@@ -160,7 +153,6 @@ public class Statistics {
      * @return The full statistics history.
      */
     public StatisticsHistory getDetailedHistory() {
-        return loadStatisticsHistory();
+        return statisticsHistory;
     }
 }
-
