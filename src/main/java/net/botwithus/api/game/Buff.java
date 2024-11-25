@@ -95,8 +95,8 @@ public enum Buff {
     }),
     ;
 
-    private String name;
-    private Callable<Integer[]> logic; // timeRemaining, potency, isActive;
+    private final String name;
+    private final Callable<Integer[]> logic; // timeRemaining, potency, isActive;
 
     Buff(String name, Callable<Integer[]> logic) {
         this.name = name;

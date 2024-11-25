@@ -1,12 +1,12 @@
 package net.botwithus.api.game.script.treescript;
 
 import com.google.common.flogger.FluentLogger;
+import lombok.SneakyThrows;
 import net.botwithus.api.game.script.treescript.permissive.Permissive;
 import net.botwithus.api.game.script.treescript.permissive.Result;
 import net.botwithus.rs3.script.Script;
 
 import java.util.concurrent.Callable;
-import lombok.SneakyThrows;
 
 /**
  * Represents a branch task in a tree. This task is not a leaf node and

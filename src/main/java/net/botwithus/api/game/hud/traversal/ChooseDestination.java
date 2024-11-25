@@ -4,7 +4,6 @@ import net.botwithus.rs3.game.hud.interfaces.Interfaces;
 import net.botwithus.rs3.game.minimenu.MiniMenu;
 import net.botwithus.rs3.game.minimenu.actions.ComponentAction;
 import net.botwithus.rs3.game.queries.builders.components.ComponentQuery;
-import net.botwithus.rs3.script.ScriptConsole;
 
 public class ChooseDestination {
     private static final int[] INDEX_IDS = {

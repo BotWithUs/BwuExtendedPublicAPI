@@ -2,9 +2,9 @@ package net.botwithus.api.game.hud.inventories;
 
 import com.google.common.flogger.FluentLogger;
 import net.botwithus.rs3.game.Distance;
+import net.botwithus.rs3.game.Item;
 import net.botwithus.rs3.game.hud.interfaces.Component;
 import net.botwithus.rs3.game.hud.interfaces.Interfaces;
-import net.botwithus.rs3.game.Item;
 import net.botwithus.rs3.game.minimenu.MiniMenu;
 import net.botwithus.rs3.game.minimenu.actions.ComponentAction;
 import net.botwithus.rs3.game.minimenu.actions.ObjectAction;
@@ -12,11 +12,10 @@ import net.botwithus.rs3.game.queries.builders.characters.NpcQuery;
 import net.botwithus.rs3.game.queries.builders.components.ComponentQuery;
 import net.botwithus.rs3.game.queries.builders.items.InventoryItemQuery;
 import net.botwithus.rs3.game.queries.builders.objects.SceneObjectQuery;
+import net.botwithus.rs3.game.vars.VarManager;
 import net.botwithus.rs3.script.Execution;
 import net.botwithus.rs3.script.ScriptConsole;
 import net.botwithus.rs3.util.RandomGenerator;
-import net.botwithus.rs3.game.vars.VarManager;
-
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -95,6 +94,65 @@ public class Bank {
         }
         return false;
     }
+
+    /**
+     * Opens the bank with retry attempts.
+     *
+     * @param maxAttempts The maximum number of attempts to open the bank.
+     * @return {@code true} if the bank was successfully opened, {@code false} otherwise.
+     */
+    public static boolean openWithRetries(int maxAttempts) {
+        for (int attempt = 0; attempt < maxAttempts; attempt++) {
+            if (isOpen()) {
+                return true;
+            }
+            if (open()) {
+                Execution.delay(1000); // Allow interface to load
+                return true;
+            }
+            Execution.delay(2000); // Retry delay
+        }
+        return false;
+    }
+
+    /**
+     * Closes the bank interface with retry attempts.
+     *
+     * @param maxAttempts The maximum number of attempts to close the bank.
+     * @return {@code true} if the bank was successfully closed, {@code false} otherwise.
+     */
+    public static boolean closeWithRetries(int maxAttempts) {
+        for (int attempt = 0; attempt < maxAttempts; attempt++) {
+            if (!isOpen()) {
+                return true;
+            }
+            if (close()) {
+                return true;
+            }
+            Execution.delay(2000); // Retry delay
+        }
+        return false;
+    }
+
+    /**
+     * Checks if an item exists in the backpack or the bank.
+     *
+     * @param itemName The name of the item to search for.
+     * @return {@code true} if the item is found, {@code false} otherwise.
+     */
+    public static boolean containsItem(String itemName) {
+        boolean inBackpack = Backpack.getItems().stream()
+                .anyMatch(item -> itemName.equalsIgnoreCase(item.getName()));
+        if (inBackpack) {
+            return true;
+        }
+        if (isOpen()) {
+            return Arrays.stream(getItems())
+                    .anyMatch(item -> itemName.equalsIgnoreCase(item.getName()));
+        }
+        return false;
+    }
+
 
     /**
      * Checks if the bank is open
@@ -223,7 +281,7 @@ public class Bank {
         setTransferOption(TransferOptionType.ALL);
         Item item = query.results().first();
         if (item != null) {
-            ScriptConsole.println("Item: " + item.toString());
+            ScriptConsole.println("Item: " + item);
         } else {
             ScriptConsole.println("Item is null");
         }
@@ -405,6 +463,25 @@ public class Bank {
     }
 
     /**
+     * Deposits all items of the specified name into the bank with retries.
+     *
+     * @param itemName The name of the item to deposit.
+     * @param maxAttempts The maximum number of attempts.
+     * @return {@code true} if the deposit was successful, {@code false} otherwise.
+     */
+    public static boolean depositAllWithRetries(String itemName, int maxAttempts) {
+        for (int attempt = 0; attempt < maxAttempts; attempt++) {
+            if (depositAll(itemName)) {
+                Execution.delay(1000); // Allow bank interface to process
+                return true;
+            }
+            Execution.delay(2000); // Retry delay
+        }
+        return false;
+    }
+
+
+    /**
      * Loads the given preset number.
      *
      * @param presetNumber the preset number to load
@@ -446,6 +523,75 @@ public class Bank {
     public static int getPreviousLoadedPreset() {
         return previousLoadedPreset;
     }
+
+    /**
+     * Interacts with a box in the backpack to empty its contents into the bank.
+     *
+     * @param boxName The name (or partial name) of the box to interact with.
+     * @param option  The interaction option (e.g., "Empty").
+     * @return {@code true} if the box was successfully emptied, {@code false} otherwise.
+     */
+    public static boolean emptyBox(String boxName, String option) {
+        // Find the box in the backpack
+        var box = Backpack.getItems().stream()
+                .filter(item -> item.getName() != null && item.getName().contains(boxName))
+                .findFirst()
+                .orElse(null);
+
+        if (box == null) {
+            // Box not found in the backpack
+            return false;
+        }
+
+        // Ensure the bank interface is open
+        if (!isOpen()) {
+            return false;
+        }
+
+        // Query the bank interface for the specific option to empty the box
+        var component = ComponentQuery.newQuery(517)
+                .option(option)
+                .results()
+                .first();
+
+        if (component == null) {
+            // The specified interaction option was not found in the bank interface
+            return false;
+        }
+
+        // Interact with the option to empty the box
+        if (component.interact(option)) {
+            Execution.delay(1500); // Allow time for the interaction to complete
+            return true;
+        }
+
+        // Interaction failed
+        return false;
+    }
+
+
+    /**
+     * Handles the complete banking process including depositing items, emptying boxes, and closing the bank.
+     *
+     * @param itemToBank The name of the item to deposit.
+     * @param boxName The name of the box to empty.
+     * @param option The interaction option for the box.
+     * @param maxAttempts The maximum number of retry attempts.
+     * @return {@code true} if the banking process was successful, {@code false} otherwise.
+     */
+    public static boolean handleBanking(String itemToBank, String boxName, String option, int maxAttempts) {
+        if (!openWithRetries(maxAttempts)) {
+            return false;
+        }
+        if (!depositAllWithRetries(itemToBank, maxAttempts)) {
+            return false;
+        }
+        if (!emptyBox(boxName, option)) { // This method would need to be added to handle emptying boxes.
+            return false;
+        }
+        return closeWithRetries(maxAttempts);
+    }
+
 }
 
 enum TransferOptionType {
@@ -455,7 +601,7 @@ enum TransferOptionType {
     ALL(7),
     X(5);
 
-    private int varbitStateValue;
+    private final int varbitStateValue;
 
     TransferOptionType(int varbitStateValue) {
         this.varbitStateValue = varbitStateValue;

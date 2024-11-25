@@ -1,24 +1,17 @@
 package net.botwithus.api.game.hud.inventories;
 
 import net.botwithus.rs3.game.Item;
-import net.botwithus.rs3.game.queries.builders.ItemQuery;
-import net.botwithus.rs3.game.queries.builders.components.ComponentQuery;
 import net.botwithus.rs3.game.queries.builders.items.InventoryItemQuery;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.function.BiFunction;
 import java.util.regex.Pattern;
 
 /**
  * A class that provides methods to interact with the player's backpack.
- *
- * @author David
  */
 public final class Backpack {
-    private static final Pattern SELECTED_ITEM_PATTERN = Pattern.compile("^Use\\s.*?(\\s->\\s).*$");
 
-    static final BackpackInventory BACKPACK = new BackpackInventory();
+    private static final BackpackInventory BACKPACK = new BackpackInventory();
 
     private Backpack() {
     }
@@ -35,178 +28,175 @@ public final class Backpack {
     /**
      * Checks if the backpack is empty.
      *
-     * @return true if the backpack is empty, false otherwise.
+     * @return true if the backpack is empty, false otherwise
      */
     public static boolean isEmpty() {
         return BACKPACK.isEmpty();
     }
 
+    /**
+     * Checks if the backpack contains an item by its name(s).
+     *
+     * @param names The names of the items to check.
+     * @return true if any of the items are found, false otherwise.
+     */
     public static boolean contains(String... names) {
         return BACKPACK.contains(names);
     }
 
+    /**
+     * Checks if the backpack contains an item by its ID(s).
+     *
+     * @param ids The IDs of the items to check.
+     * @return true if any of the items are found, false otherwise.
+     */
     public static boolean contains(int... ids) {
         return BACKPACK.contains(ids);
     }
 
-    public static int countFreeSlots() {
-        return BACKPACK.countFreeSlots();
+    /**
+     * Gets a list of all items in the backpack.
+     *
+     * @return A list of items in the backpack.
+     */
+    public static List<Item> getItems() {
+        return BACKPACK.getItems();
     }
 
-    public static int getCount() {
-        return BACKPACK.getCount();
-    }
-
-    public static int getCount(String... names) {
-        return BACKPACK.getCount(names);
-    }
-
-    public static int getCount(int... ids) {
-        return BACKPACK.getCount(ids);
-    }
-
-    public static int getCount(Pattern pattern) {
-        return BACKPACK.getCount(pattern);
-    }
-
+    /**
+     * Gets the quantity of an item in the backpack by its name(s).
+     *
+     * @param names The names of the items to count.
+     * @return The quantity of the specified items.
+     */
     public static int getQuantity(String... names) {
         return BACKPACK.getQuantity(names);
     }
 
+    /**
+     * Gets the quantity of an item in the backpack by its ID(s).
+     *
+     * @param ids The IDs of the items to count.
+     * @return The quantity of the specified items.
+     */
     public static int getQuantity(int... ids) {
         return BACKPACK.getQuantity(ids);
     }
 
-    public static int getQuantity(Pattern itemNamePattern) {
-        return BACKPACK.getQuantity(itemNamePattern);
-    }
-
-    public static boolean contains(Pattern itemNamePattern) {
-        return BACKPACK.contains(itemNamePattern);
-    }
-
-    public static boolean containsAllOf(String... names) {
-        return BACKPACK.containsAllOf(names);
-    }
-
-    public static boolean containsAllOf(Pattern pattern) {
-        return BACKPACK.containsAllOf(pattern);
-    }
-
-    public static boolean containsAnyExcept(String... names) {
-        return BACKPACK.containsAnyExcept(names);
-    }
-
-    public static boolean containsAnyExcept(Pattern... patterns) {
-        return BACKPACK.containsAnyExcept(patterns);
-    }
-
-    public static boolean containsItemByCategory(int... categoryIds) {
-        return BACKPACK.containsItemByCategory(categoryIds);
-    }
-
-    public static boolean interact(int slot, String option) {
-        return BACKPACK.interact(slot, option);
-    }
-
     /**
-     * Executes an action on the backpack.
+     * Gets an item from the backpack by its name.
      *
-     * @param slot   The slot of the backpack to perform the action on.
-     * @param option The option to perform on the slot.
-     * @return Whether the action was successful.
+     * @param name The name of the item to retrieve.
+     * @return The item if it exists, or null if not found.
      */
-    public static boolean interact(int slot, int option) {
-        return BACKPACK.interact(slot, option);
+    public static Item getItem(String name) {
+        return BACKPACK.getItem(name);
     }
 
     /**
-     * Executes an action on the backpack.
+     * Gets an item from the backpack that matches a pattern.
      *
-     * @param name The name of the action to be executed.
-     * @return True if the action was successful, false otherwise.
+     * @param pattern The pattern to match the item's name against.
+     * @return The item if it exists, or null if not found.
      */
-    public static boolean interact(String name) {
-        return BACKPACK.interact(name);
+    public static Item getItem(Pattern pattern) {
+        return BACKPACK.getItem(pattern);
     }
 
     /**
-     * Executes an action on a given item in the backpack.
+     * Gets a list of items in the backpack with a specific interaction option.
      *
-     * @param name   The name of the item to perform the action on.
-     * @param option The action to perform on the item.
-     * @return True if the action was successful, false otherwise.
+     * @param option The option to match.
+     * @return A list of items with the specified option.
+     */
+    public static List<Item> getItemsWithOption(String option) {
+        return BACKPACK.getItemsWithOptions(option);
+    }
+
+    /**
+     * Interacts with an item in the backpack by its name and an interaction option.
+     *
+     * @param name   The name of the item.
+     * @param option The interaction option.
+     * @return true if the interaction was successful, false otherwise.
      */
     public static boolean interact(String name, String option) {
         return BACKPACK.interact(name, option);
     }
 
     /**
-     * Executes an action on the backpack.
+     * Interacts with an item in the backpack by its ID and an interaction option.
      *
-     * @param name       The name of the action to be executed.
-     * @param option     The option of the action to be executed.
-     * @param namepred   The predicate to be used to validate the name.
-     * @param optionpred The predicate to be used to validate the option.
-     * @return True if the action was successful, false otherwise.
+     * @param id     The ID of the item.
+     * @param option The interaction option.
+     * @return true if the interaction was successful, false otherwise.
      */
-    public static boolean interact(String name, String option, BiFunction<String, CharSequence, Boolean> namepred, BiFunction<String, CharSequence, Boolean> optionpred) {
-        return BACKPACK.interact(name, option, namepred, optionpred);
+    public static boolean interact(int id, String option) {
+        return BACKPACK.interact(id, option);
     }
 
     /**
-     * Executes an action on the backpack
+     * Checks if the backpack contains all specified items by their names.
      *
-     * @param name   The name of the action to be executed
-     * @param option The option to be used for the action
-     * @return The result of the action
+     * @param names The names of the items to check.
+     * @return true if all specified items are found, false otherwise.
      */
-    public static boolean interact(String name, int option) {
-        return BACKPACK.interact(name, option);
-    }
-
-    public static boolean interact(Pattern namePattern, String option) {
-        return BACKPACK.interact(namePattern, option);
-    }
-
-    public static boolean interact(Pattern namePattern, int option) {
-        return BACKPACK.interact(namePattern, option);
+    public static boolean containsAllOf(String... names) {
+        return BACKPACK.containsAllOf(names);
     }
 
     /**
-     * Gets the value of a varbit in a given slot.
+     * Checks if the backpack contains any items except the specified names.
      *
-     * @param slot     The slot of the varbit.
+     * @param names The names of the items to exclude.
+     * @return true if any items are found that do not match the specified names.
+     */
+    public static boolean containsAnyExcept(String... names) {
+        return BACKPACK.containsAnyExcept(names);
+    }
+
+    /**
+     * Retrieves the selected item in the backpack.
+     *
+     * @return The selected item, or null if none is selected.
+     */
+    public static Item getSelectedItem() {
+        return InventoryItemQuery.newQuery(93).results().first();
+    }
+
+    /**
+     * Retrieves an item's varbit value from the backpack.
+     *
+     * @param slot     The slot of the item.
      * @param varbitId The ID of the varbit.
-     * @return The value of the varbit.
+     * @return The varbit value.
      */
     public static int getVarbitValue(int slot, int varbitId) {
         return BACKPACK.getVarbitValue(slot, varbitId);
     }
 
     /**
-     * Retrieves an item from the backpack.
+     * Retrieves an item's count by a pattern matching its name.
      *
-     * @param name The name of the item to retrieve.
-     * @return An {@link Optional} containing the item if it exists, or an empty {@link Optional} if it does not.
+     * @param pattern The pattern to match against item names.
+     * @return The total count of items matching the pattern.
      */
-    public static Item getItem(String name) {
-        return BACKPACK.getItem(name);
+    public static int getCount(Pattern pattern) {
+        return BACKPACK.getCount(pattern);
     }
 
-    public static Item getItem(Pattern pattern) {
-        return BACKPACK.getItem(pattern);
+    /**
+     * Retrieves the item located in a specific slot in the backpack.
+     *
+     * @param slot The slot index to retrieve the item from.
+     * @return The {@link Item} located in the specified slot, or {@code null} if the slot is empty.
+     */
+
+    public static Item getSlot(int slot) {
+        return BACKPACK.getItems().stream()
+                .filter(item -> item.getSlot() == slot)
+                .findFirst()
+                .orElse(null);
     }
 
-    public static List<Item> getItems() {
-        return BACKPACK.getItems();
-    }
-
-    public static List<Item> getItemsWithOption(String option) {
-        return BACKPACK.getItemsWithOptions(option);
-    }
-
-    public static Item getSelectedItem() {
-        return InventoryItemQuery.newQuery(93).option(SELECTED_ITEM_PATTERN).results().first();
-    }
 }

@@ -1,8 +1,8 @@
 package net.botwithus.api.game.hud.inventories;
 
+import net.botwithus.rs3.game.Item;
 import net.botwithus.rs3.game.hud.interfaces.Component;
 import net.botwithus.rs3.game.hud.interfaces.Interfaces;
-import net.botwithus.rs3.game.Item;
 import net.botwithus.rs3.game.js5.types.EnumType;
 import net.botwithus.rs3.game.js5.types.configs.ConfigManager;
 import net.botwithus.rs3.game.minimenu.MiniMenu;
@@ -13,10 +13,8 @@ import net.botwithus.rs3.script.Execution;
 import net.botwithus.rs3.util.RandomGenerator;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 public final class LootInventory {

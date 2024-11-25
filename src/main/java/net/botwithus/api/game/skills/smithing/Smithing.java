@@ -1,6 +1,5 @@
 package net.botwithus.api.game.skills.smithing;
 
-import com.sun.jdi.Value;
 import net.botwithus.rs3.game.cs2.ScriptBuilder;
 import net.botwithus.rs3.game.cs2.layouts.Layout;
 import net.botwithus.rs3.game.js5.types.EnumType;
@@ -9,10 +8,7 @@ import net.botwithus.rs3.game.js5.types.StructType;
 import net.botwithus.rs3.game.js5.types.configs.ConfigManager;
 import net.botwithus.rs3.game.skills.Skills;
 import net.botwithus.rs3.game.vars.VarManager;
-import net.botwithus.rs3.script.Script;
 import net.botwithus.rs3.script.ScriptConsole;
-
-import java.util.Arrays;
 
 /**
  * Exposes information related to the players inventory in regard to smithing
@@ -20,6 +16,7 @@ import java.util.Arrays;
 
 public final class Smithing {
     private Smithing() {
+
     }
 
     /**
@@ -351,8 +348,8 @@ public final class Smithing {
     public static final ScriptBuilder get_max_heat = ScriptBuilder.of(2547).args(Layout.INT).returns(Layout.INT);
     public static double getHeatPercentage(int slot) {
         int productId = getProductId(VarManager.getInvVarbit(93, slot, 43222));
-        double currentHeat = (double) VarManager.getInvVarbit(93, slot, 43225);
-        double maxHeat = (double) get_max_heat.invokeExact(productId).get(0).asInt();
+        double currentHeat = VarManager.getInvVarbit(93, slot, 43225);
+        double maxHeat = get_max_heat.invokeExact(productId).get(0).asInt();
         return currentHeat / maxHeat * 100.0f;
     }
 
