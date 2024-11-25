@@ -18,7 +18,7 @@ public abstract class TreeTask implements ITreeTask {
     protected Result latestValidate = new Result(false);
     private String definedIn = "";
 
-    private Script script;
+    private final Script script;
     private Callable<String> desc = () -> "";
 
     public TreeTask(Script script) {
@@ -195,10 +195,7 @@ public abstract class TreeTask implements ITreeTask {
             return checkSuccess;
         }
         var checkFailure = this.failureTask().findTaskByDescription(description);
-        if (checkFailure != null) {
-            return checkFailure;
-        }
-        return null;
+        return checkFailure;
     }
 
 }

@@ -1,6 +1,5 @@
 package net.botwithus.api.game.hud.prayer;
 
-import net.botwithus.rs3.game.skills.Skills;
 import net.botwithus.rs3.game.vars.VarManager;
 
 import java.util.Arrays;
@@ -89,7 +88,7 @@ public final class Prayer {
         CURSES(1),
         UNKNOWN(-1);
 
-        private int varbitValue;
+        private final int varbitValue;
 
         BookType(int varbitValue) {
             this.varbitValue = varbitValue;

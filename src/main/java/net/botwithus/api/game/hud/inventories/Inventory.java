@@ -2,15 +2,14 @@ package net.botwithus.api.game.hud.inventories;
 
 import com.google.common.flogger.FluentLogger;
 import net.botwithus.api.game.Items;
-import net.botwithus.rs3.game.hud.interfaces.Component;
 import net.botwithus.rs3.game.Item;
+import net.botwithus.rs3.game.hud.interfaces.Component;
 import net.botwithus.rs3.game.js5.types.InventoryType;
 import net.botwithus.rs3.game.js5.types.ItemType;
 import net.botwithus.rs3.game.js5.types.configs.ConfigManager;
 import net.botwithus.rs3.game.queries.builders.components.ComponentQuery;
 import net.botwithus.rs3.game.queries.builders.items.InventoryItemQuery;
 import net.botwithus.rs3.game.queries.results.ResultSet;
-import net.botwithus.rs3.script.config.ScriptConfig;
 import net.botwithus.rs3.util.Regex;
 
 import java.util.*;

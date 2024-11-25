@@ -1,7 +1,7 @@
 package net.botwithus.api.util.time;
 
-import java.time.Instant;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 

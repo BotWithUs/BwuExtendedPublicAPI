@@ -6,8 +6,8 @@ import lombok.SneakyThrows;
 import java.util.concurrent.Callable;
 
 public class Permissive {
-    private String name;
-    private Callable<Boolean> predicate;
+    private final String name;
+    private final Callable<Boolean> predicate;
     private Result lastResult = new Result(false);
     private static final FluentLogger log = FluentLogger.forEnclosingClass();
 

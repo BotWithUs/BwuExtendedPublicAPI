@@ -1,7 +1,9 @@
 package net.botwithus.api.game.world;
 
 import com.google.common.flogger.FluentLogger;
+import net.botwithus.rs3.game.Area;
 import net.botwithus.rs3.game.Client;
+import net.botwithus.rs3.game.Coordinate;
 import net.botwithus.rs3.game.Distance;
 import net.botwithus.rs3.game.minimenu.MiniMenu;
 import net.botwithus.rs3.game.minimenu.actions.WalkAction;
@@ -11,8 +13,6 @@ import net.botwithus.rs3.game.movement.TraverseEvent;
 import net.botwithus.rs3.script.Execution;
 import net.botwithus.rs3.script.ScriptConsole;
 import net.botwithus.rs3.util.RandomGenerator;
-import net.botwithus.rs3.game.Area;
-import net.botwithus.rs3.game.Coordinate;
 
 public class Traverse {
     private static final FluentLogger log = FluentLogger.forEnclosingClass();

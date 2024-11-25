@@ -1,8 +1,8 @@
 package net.botwithus.api.game.hud.inventories;
 
 import com.google.common.flogger.FluentLogger;
-import net.botwithus.rs3.game.hud.interfaces.Component;
 import net.botwithus.rs3.game.Item;
+import net.botwithus.rs3.game.hud.interfaces.Component;
 import net.botwithus.rs3.game.queries.builders.components.ComponentQuery;
 import net.botwithus.rs3.game.queries.builders.items.InventoryItemQuery;
 import net.botwithus.rs3.game.queries.results.ResultSet;

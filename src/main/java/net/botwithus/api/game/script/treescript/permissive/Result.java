@@ -1,9 +1,9 @@
 package net.botwithus.api.game.script.treescript.permissive;
 
 public class Result<T> {
-    private T result;
+    private final T result;
     private int expirationTime;
-    private long resultTime;
+    private final long resultTime;
 
     public Result(T result) {
         this.result = result;
