@@ -1,6 +1,6 @@
 package net.botwithus.api.game.script.v2.ui;
 
-import net.botwithus.api.game.script.v2.BwuScript;
+import net.botwithus.api.game.script.v2.BwuScriptv2;
 import net.botwithus.api.game.script.v2.permissive.ResultType;
 import net.botwithus.api.game.script.v2.permissive.node.TreeNode;
 import net.botwithus.api.game.script.v2.util.statistic.XPInfo;
@@ -15,11 +15,11 @@ import net.botwithus.rs3.script.ScriptGraphicsContext;
 import java.util.Locale;
 
 public class BwuGraphicsContext extends ScriptGraphicsContext {
-    private final BwuScript script;
+    private final BwuScriptv2 script;
     private boolean renderOnlyActivePathCheckbox = true;
     private String branchNameFilter = "";
 
-    public BwuGraphicsContext(ScriptConsole console, BwuScript script) {
+    public BwuGraphicsContext(ScriptConsole console, BwuScriptv2 script) {
         super(console);
         this.script = script;
     }

@@ -20,7 +20,7 @@ import net.botwithus.internal.scripts.ScriptDefinition;
 import net.botwithus.rs3.script.config.ScriptConfig;
 
 
-public abstract class BwuScript extends PermissiveScript {
+public abstract class BwuScriptv2 extends PermissiveScript {
     public static final FluentLogger LOG = FluentLogger.forEnclosingClass();
     public Gson gson = new GsonBuilder().setPrettyPrinting().create();
     
@@ -32,7 +32,7 @@ public abstract class BwuScript extends PermissiveScript {
     private final Map<String, State> states = new HashMap<>();
     private State currentState;
 
-    public BwuScript(String scriptName, ScriptConfig scriptConfig, ScriptDefinition scriptDef, State... state) {
+    public BwuScriptv2(String scriptName, ScriptConfig scriptConfig, ScriptDefinition scriptDef, State... state) {
         super(scriptName, scriptConfig, scriptDef);
         this.currentState = state[0];
 

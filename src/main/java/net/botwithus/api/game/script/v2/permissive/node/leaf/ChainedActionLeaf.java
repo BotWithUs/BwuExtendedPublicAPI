@@ -1,6 +1,5 @@
 package net.botwithus.api.game.script.v2.permissive.node.leaf;
 
-import net.botwithus.api.game.hud.inventories.Backpack;
 import net.botwithus.api.game.script.v2.permissive.node.LeafNode;
 import net.botwithus.rs3.script.Script;
 
