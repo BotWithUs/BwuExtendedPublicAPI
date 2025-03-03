@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "net.botwithus.xapi"
-version = "1.0.4"
+version = "1.0.8"
 
 repositories {
     mavenLocal()
@@ -24,7 +24,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("com.google.flogger:flogger:0.7.4")
     //implementation("net.botwithus.rs3:api:1.0.0-SNAPSHOT")
-    implementation("net.botwithus.rs3:botwithus-api:1.0.0-SNAPSHOT")
+    implementation("net.botwithus.rs3:botwithus-api:1.+")
     implementation("org.jetbrains:annotations:24.0.0")
     implementation("org.projectlombok:lombok:1.18.22")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")

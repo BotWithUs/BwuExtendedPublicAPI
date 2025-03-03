@@ -32,13 +32,28 @@ public abstract class BwuScriptv2 extends PermissiveScript {
     private final Map<String, State> states = new HashMap<>();
     private State currentState;
 
-    public BwuScriptv2(String scriptName, ScriptConfig scriptConfig, ScriptDefinition scriptDef, State... state) {
+    public BwuScriptv2(String scriptName, ScriptConfig scriptConfig, ScriptDefinition scriptDef) {
         super(scriptName, scriptConfig, scriptDef);
-        this.currentState = state[0];
+    }
 
+    /**
+     * Initialize the script with the given states.
+     * @param state The states to initialize the script with.
+     */
+    public void initStates(State... state){
+        this.currentState = state[0];
         for (State s : state) {
             states.put(s.getName(), s);
         }
+    }
+
+    /**
+     * Get the state with the given name.
+     * @param name The name of the state to get.
+     * @return The state with the given name.
+     */
+    public State getState(String name){
+        return states.get(name);
     }
 
     @Override

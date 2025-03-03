@@ -31,7 +31,6 @@ public class Bank {
     private static final int PRESET_BROWSING_VARBIT_ID = 49662, SELECTED_OPTIONS_TAB_VARBIT_ID = 45191, WITHDRAW_TYPE_VARBIT_ID = 45189, WITHDRAW_X_VARP_ID = 111;
 
     private static final Inventory BANK = new BankInventory();
-    private static final Inventory BACKPACK = new Inventory(93, 517, 15, i -> i);
     private static final FluentLogger log = FluentLogger.forEnclosingClass();
 
     private static final Pattern BANK_NAME_PATTERN = Pattern.compile("^(?!.*deposit).*(bank|counter).*$", Pattern.CASE_INSENSITIVE);
@@ -302,6 +301,26 @@ public class Bank {
     }
 
     /**
+     * Deposits all items in the player's bank.
+     *
+     * @return true if the items were successfully deposited, false otherwise
+     */
+    public static boolean depositEquipment() {
+        Component component = ComponentQuery.newQuery(517).componentIndex(42).results().first();
+        return component != null && component.interact(1);
+    }
+
+    /**
+     * Deposits all items in the player's bank.
+     *
+     * @return true if the items were successfully deposited, false otherwise
+     */
+    public static boolean depositBackpack() {
+        Component component = ComponentQuery.newQuery(517).componentIndex(39).results().first();
+        return component != null && component.interact(1);
+    }
+
+    /**
      * Attempts to deposit an item from the given {@link InventoryItemQuery}.
      *
      * @param query  The query to use for finding the item to deposit.
@@ -446,6 +465,7 @@ public class Bank {
     public static int getPreviousLoadedPreset() {
         return previousLoadedPreset;
     }
+
 }
 
 enum TransferOptionType {

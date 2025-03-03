@@ -15,6 +15,11 @@ public class Branch extends TreeNode {
     private TreeNode successNode, failureNode;
     private Callable<TreeNode> successNodeC, failureNodeC;
 
+    public Branch (Script script, String desc, Interlock... Interlocks) {
+        super(script, desc);
+        this.interlocks = Interlocks;
+    }
+
     public Branch(Script script, String desc, Callable<TreeNode> successNode, TreeNode failureNode, Interlock... interlocks) {
         super(script, desc);
         this.interlocks = interlocks;
@@ -91,7 +96,6 @@ public class Branch extends TreeNode {
         return activeInterlock != null;
     }
 
-
     @Override
     public boolean isLeaf() {
         return false;
@@ -134,4 +138,79 @@ public class Branch extends TreeNode {
         return interlocks;
     }
 
+    /**
+     * Creates a copy of this branch with new success and failure nodes
+     * @param newSuccessNode The new success node
+     * @param newFailureNode The new failure node
+     * @return A new Branch with the same interlocks but different success/failure nodes
+     */
+    public Branch newWithNodes(TreeNode newSuccessNode, TreeNode newFailureNode) {
+        return new Branch(
+                getScript(),
+                getDesc(),
+                getDefinedIn(),
+                newSuccessNode,
+                newFailureNode,
+                interlocks != null ? interlocks.clone() : null
+        );
+    }
+
+    /**
+     * Creates a copy of this branch with new success and failure nodes using Callables
+     * @param newSuccessNode The new success node callable
+     * @param newFailureNode The new failure node callable
+     * @return A new Branch with the same interlocks but different success/failure nodes
+     */
+    public Branch newWithNodes(Callable<TreeNode> newSuccessNode, Callable<TreeNode> newFailureNode) {
+        return new Branch(
+                getScript(),
+                getDesc(),
+                getDefinedIn(),
+                newSuccessNode,
+                newFailureNode,
+                interlocks != null ? interlocks.clone() : null
+        );
+    }
+
+    /**
+     * Creates a copy of this branch with a new success node
+     * @param newSuccessNode The new success node
+     * @return A new Branch with the same interlocks and failure node but different success node
+     */
+    public Branch newWithSuccessNode(TreeNode newSuccessNode) {
+        return new Branch(
+                getScript(),
+                getDesc(),
+                getDefinedIn(),
+                newSuccessNode,
+                failureNode,
+                interlocks != null ? interlocks.clone() : null
+        );
+    }
+
+    /**
+     * Creates a copy of this branch with a new failure node
+     * @param newFailureNode The new failure node
+     * @return A new Branch with the same interlocks and success node but different failure node
+     */
+    public Branch newWithFailureNode(TreeNode newFailureNode) {
+        return new Branch(
+                getScript(),
+                getDesc(),
+                getDefinedIn(),
+                successNode,
+                newFailureNode,
+                interlocks != null ? interlocks.clone() : null
+        );
+    }
+
+    /**
+     * Sets the children nodes of this branch
+     * @param successNode The new success node
+     * @param failureNode The new failure node
+     */
+    public void setChildrenNodes(TreeNode successNode, TreeNode failureNode) {
+        this.successNode = successNode;
+        this.failureNode = failureNode;
+    }
 }

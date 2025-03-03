@@ -15,6 +15,7 @@ public enum AncientBook implements PrayerAbility {
     DEFLECT_MAGIC(14594, 16768),
     DEFLECT_MISSILES(14595, 16769),
     DEFLECT_MELEE(14596, 16770),
+    DEFLECT_NECROMANCY(48372, 53281),
     LEECH_ATTACK(14597, 16771),
     LEECH_RANGED(14598, 16772),
     LEECH_RANGE_STRENGTH(14599, 16781),
@@ -53,8 +54,7 @@ public enum AncientBook implements PrayerAbility {
     LEECH_NECROMANCY_ATTACK(48373, 53277),
     LEECH_NECROMANCY_STRENGTH(48374, 53278),
     SORROW(48375, 53279),
-    RUINATION(48376, 53280),
-    DEFLECT_NECROMANCY(48372, 53281);
+    RUINATION(48376, 53280);
 
     private final int structId;
     private final int varbitId;
