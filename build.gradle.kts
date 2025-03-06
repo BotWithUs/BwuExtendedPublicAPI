@@ -12,7 +12,7 @@ repositories {
     mavenCentral()
     maven { setUrl("https://jitpack.io") }
     maven {
-        setUrl("https://nexus.botwithus.net/repository/maven-snapshots/")
+        setUrl("https://nexus.botwithus.net/repository/maven-releases/")
     }
 }
 
