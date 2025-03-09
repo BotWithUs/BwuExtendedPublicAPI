@@ -64,6 +64,10 @@ public class ChainedActionLeaf extends LeafNode {
         return validationState;
     }
 
+    public String getProgress() {
+        return String.format("%d/%d", currentActionIndex, actions.size());
+    }
+
     public static class Action {
         private final Callable<Boolean> callable;
         private final int timeoutTicks;

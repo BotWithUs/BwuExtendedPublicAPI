@@ -87,4 +87,5 @@ public class Traverse {
         ScriptConsole.println("[Traverse#walkTo]: Attempting to walk to %d, %d, %s", coordinate.getX(), coordinate.getY(), result);
         return result && Execution.delayUntil(RandomGenerator.nextInt(8000, 10000), () -> Distance.to(coordinate) < 5);
     }
+
 }

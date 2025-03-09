@@ -15,6 +15,7 @@ public class InteractiveLeaf<T extends Interactable<T>> extends LeafNode {
     private int optionIndex = -1;
     private String optionText = "";
     private Runnable successAction = null;
+    private Callable<Boolean> successCallable = null;
 
     /**
      * Constructor to initialize InteractiveLeaf with a target.
@@ -50,15 +51,68 @@ public class InteractiveLeaf<T extends Interactable<T>> extends LeafNode {
         this.successAction = successAction;
     }
 
+    /***
+     * Constructor to initialize InteractiveLeaf with a target and a callable logic.
+     * @param script The parent script.
+     * @param successCallable The callable logic for the leaf node.
+     */
+    public InteractiveLeaf(Script script, Callable<Boolean> successCallable) {
+        super(script);
+        this.successCallable = successCallable;
+    }
+
+    /***
+     * Constructor to initialize InteractiveLeaf with a target, a description, and a callable logic.
+     * @param script The parent script.
+     * @param desc The description of the leaf node.
+     * @param successCallable The callable logic for the leaf node.
+     */
+    public InteractiveLeaf(Script script, String desc, Callable<Boolean> successCallable) {
+        super(script, desc);
+        this.successCallable = successCallable;
+    }
+
+    /***
+     * Constructor to initialize InteractiveLeaf with a target, a description, a definedIn string, and a callable logic.
+     * @param script The parent script.
+     * @param desc The description of the leaf node.
+     * @param definedIn The definedIn string of the leaf node.
+     * @param successCallable The callable logic for the leaf node.
+     */
+    public InteractiveLeaf(Script script, String desc, String definedIn, Callable<Boolean> successCallable) {
+        super(script, desc, definedIn);
+        this.successCallable = successCallable;
+    }
+
     private Callable<Boolean> interact() {
         return () -> {
             if (optionIndex > -1) {
                 var val = target.interact(optionIndex);
-                successAction.run();
+                if (successAction != null) {
+                    successAction.run();
+                } else if (successCallable != null) {
+                    try {
+                        if (successCallable.call()) {
+                            return val;
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
                 return val;
             } else if (!optionText.isEmpty()) {
                 var val = target.interact(optionText);
-                successAction.run();
+                if (successAction != null) {
+                    successAction.run();
+                } else if (successCallable != null) {
+                    try {
+                        if (successCallable.call()) {
+                            return val;
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
                 return val;
             }
             return false;
