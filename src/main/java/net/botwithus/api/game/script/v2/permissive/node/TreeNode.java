@@ -105,7 +105,7 @@ public abstract class TreeNode implements ITreeNode {
     }
 
     public void setLatestValidate(boolean lastLoopValidate) {
-        this.latestValidate = new EvaluationResult<>(lastLoopValidate);
+        this.latestValidate = new EvaluationResult<>(lastLoopValidate, 1200);
     }
 
     /**

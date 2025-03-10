@@ -23,20 +23,20 @@ public abstract class DelayableScript extends TickingScript {
     public void onTick(LocalPlayer localPlayer) {
         try {
             if (delayUntil != null) {
-                if (delayUntil.call() || delay <= 0) {
+                if (delayUntil.call() || delay <= 1) {
                     delayUntil = null;
                 } else {
                     delay--;
                 }
             } else if (delayWhile != null) {
-                if (!delayWhile.call() || delay <= 0) {
+                if (!delayWhile.call() || delay <= 1) {
                     delayWhile = null;
                 } else {
                     delay--;
                 }
-            } else if (delay > 0) {
-                delay--;
             } else {
+                if (delay > 0)
+                    delay--;
                 doRun();
             }
         } catch (Exception e) {

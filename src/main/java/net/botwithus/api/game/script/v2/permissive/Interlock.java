@@ -41,4 +41,8 @@ public class Interlock {
     public Permissive getFirstOut() {
         return firstOut;
     }
+
+    public Permissive[] getPermissives() {
+        return permissives;
+    }
 }

@@ -1,5 +1,9 @@
 package net.botwithus.api.game.script.v2.permissive;
 
+import net.botwithus.rs3.script.ScriptConsole;
+
+import java.util.concurrent.Callable;
+
 public class EvaluationResult<T> {
     private final T result;
     private final int expirationTime;

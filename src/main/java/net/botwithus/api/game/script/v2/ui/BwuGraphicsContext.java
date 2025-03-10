@@ -2,6 +2,7 @@ package net.botwithus.api.game.script.v2.ui;
 
 import net.botwithus.api.game.script.v2.BwuScriptv2;
 import net.botwithus.api.game.script.v2.permissive.ResultType;
+import net.botwithus.api.game.script.v2.permissive.node.Branch;
 import net.botwithus.api.game.script.v2.permissive.node.TreeNode;
 import net.botwithus.api.game.script.v2.util.statistic.XPInfo;
 import net.botwithus.api.util.StringUtils;
@@ -12,6 +13,7 @@ import net.botwithus.api.util.time.enums.DurationStringFormat;
 import net.botwithus.rs3.imgui.ImGui;
 import net.botwithus.rs3.script.ScriptGraphicsContext;
 
+import java.util.Arrays;
 import java.util.Locale;
 
 public class BwuGraphicsContext extends ScriptGraphicsContext {
@@ -78,6 +80,7 @@ public class BwuGraphicsContext extends ScriptGraphicsContext {
                         branchNameFilter = ImGui.InputText("Branch Name Filter", branchNameFilter);
 
 
+                        ImGui.Text("Current State: " + script.getCurrentState().getName());
                         ImGui.Text("Current Status: " + script.getCurrentState().getStatus());
                         if (branchNameFilter != null && !branchNameFilter.isBlank()) {
 //                            var task = script.getRootTask().rootNode().findTaskByDescription(branchNameFilter);
@@ -212,11 +215,38 @@ public class BwuGraphicsContext extends ScriptGraphicsContext {
                 ImGui.Text(task.getDesc() + ": " + task.getLatestValidate().getResultType());
             }
         } else {
-            ImGui.Text(task.getClass().getSimpleName());
+            ImGui.Text(task.getDesc().isEmpty() ? task.getClass().getSimpleName() : task.getDesc());
         }
 
         // Permissives, Success, and Failure Paths
         if (!task.isLeaf()) {
+            Branch branch = (Branch) task;
+
+            // Permissives
+            ImGui.TableNextColumn();
+            ImGui.Separator();
+            if (branch.getInterlocks() != null) {
+                int i = 0;
+                for (var interlock : branch.getInterlocks()) {
+                    boolean isActive = interlock.isActive();
+                    if (isActive) {
+                        ImGui.PushStyleColor(0, Color.GREEN.getRed(), Color.GREEN.getGreen(), Color.GREEN.getBlue(), Color.GREEN.getAlpha());
+                    }
+                    ImGui.Text(interlock.getName() + ": " + (isActive ? "MET" : "NOT_MET"));
+
+                    for (var permissive : interlock.getPermissives()) {
+                        ImGui.Text("    "+ permissive.getName() + ": " + permissive.getLastResult().getResultType().name());
+                    }
+                    if (isActive) {
+                        ImGui.PopStyleColor();
+                    }
+                    
+                    if (branch.getInterlocks().length > 1 && i < branch.getInterlocks().length - 1)
+                        ImGui.SeparatorText("OR");
+                    i++;
+                }
+            }
+
             // Success Path
             ImGui.TableNextColumn();
             ImGui.Separator();

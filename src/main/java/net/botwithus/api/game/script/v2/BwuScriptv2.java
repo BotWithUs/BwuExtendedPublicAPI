@@ -33,15 +33,18 @@ public abstract class BwuScriptv2 extends PermissiveScript {
         super(scriptName, scriptConfig, scriptDef);
     }
 
+
+
     @Override
     public boolean onInitialize() {
+        var init = super.onInitialize();
         this.sgc = new BwuGraphicsContext(getConsole(), this);
         try {
             performLoadPersistentData();
         } catch (Exception e) {
             LOG.atSevere().withCause(e).log("Failed to load persistent data");
         }
-        return super.initialize();
+        return init;
     }
 
     public void performSavePersistentData() {

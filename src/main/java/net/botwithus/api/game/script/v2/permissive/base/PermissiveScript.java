@@ -56,14 +56,13 @@ public abstract class PermissiveScript extends DelayableScript {
                 debug("Active chained action failed, aborting: " + e.getMessage());
                 activeChainedAction = null;
             }
-            return;
-        }
-
-        try {
-            traverseAndExecute(getRootNode());
-        } catch (Exception e) {
-            e.printStackTrace();
-            debug("Root task traversal failed: " + e.getMessage());
+        } else {
+            try {
+                traverseAndExecute(getRootNode());
+            } catch (Exception e) {
+                e.printStackTrace();
+                debug("Root task traversal failed: " + e.getMessage());
+            }
         }
     }
 
@@ -87,10 +86,10 @@ public abstract class PermissiveScript extends DelayableScript {
         // Continue traversal if not a leaf node
         if (!node.isLeaf()) {
             if (node.validate()) {
-                debug("Node \"" + node.getDesc() + "\"validated, executing success node -> " + node.successNode().getDesc());
+                debug("[Node] \"" + node.getDesc() + "\" SUCCESS -> " + node.successNode().getDesc());
                 traverseAndExecute(node.successNode());
             } else {
-                debug("Node \"" + node.getDesc() + "\" failed validation, executing failure node -> " + node.failureNode().getDesc());
+                debug("[Node] \"" + node.getDesc() + "\" NOT_MET -> " + node.failureNode().getDesc());
                 traverseAndExecute(node.failureNode());
             }
         } else { // Execute the leaf node
@@ -171,6 +170,7 @@ public abstract class PermissiveScript extends DelayableScript {
 
     public boolean setStatus(String status) {
         if (currentState != null) {
+            println("[Status] " + status);
             currentState.setStatus(status);
             return true;
         }

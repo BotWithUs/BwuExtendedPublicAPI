@@ -93,6 +93,7 @@ public class Branch extends TreeNode {
             return false;
         }
         activeInterlock = Arrays.stream(interlocks).filter(Interlock::isActive).findFirst().orElse(null);
+        setLatestValidate(activeInterlock != null);
         return activeInterlock != null;
     }
 
@@ -125,6 +126,10 @@ public class Branch extends TreeNode {
             }
         }
         return failureNode;
+    }
+
+    public Interlock[] getInterlocks() {
+        return interlocks;
     }
 
     public Interlock[] updateInterlocks() {
