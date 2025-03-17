@@ -119,6 +119,9 @@ public class BwuGraphicsContext extends ScriptGraphicsContext {
     @Override
     public void drawOverlay() {
         super.drawOverlay();
+
+        if (script.getBuildableUI() != null)
+            script.getBuildableUI().buildOverlay();
     }
 
 
