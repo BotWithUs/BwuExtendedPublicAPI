@@ -5,14 +5,14 @@ plugins {
 }
 
 group = "net.botwithus.xapi"
-version = "1.0.9-SNAPSHOT"
+version = "1.1.0"
 
 repositories {
     mavenLocal()
     mavenCentral()
     maven { setUrl("https://jitpack.io") }
     maven {
-        setUrl("https://nexus.botwithus.net/repository/maven-snapshots/")
+        setUrl("https://nexus.botwithus.net/repository/maven-releases/")
     }
 }
 
