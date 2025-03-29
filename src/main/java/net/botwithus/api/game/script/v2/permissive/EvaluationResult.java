@@ -13,7 +13,7 @@ public class EvaluationResult<T> {
 
     public EvaluationResult(T result) {
         this.result = result;
-        this.expirationTime = 2000;
+        this.expirationTime = 3000;
         this.resultTime = System.currentTimeMillis();
     }
 

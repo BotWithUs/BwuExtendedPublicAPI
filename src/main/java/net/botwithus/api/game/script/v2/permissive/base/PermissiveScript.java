@@ -30,30 +30,36 @@ public abstract class PermissiveScript extends DelayableScript {
      */
     @Override
     public void doRun() {
-        debug("Processing game tick");
+        println("Processing game tick");
 
         if (!onPreTick()) {
-            debug("Pre-tick failed, skipping main tick logic");
+            println("Pre-tick failed, skipping main tick logic");
             return;
         }
 
         if (currentState != null) {
-            debug("Current state: " + currentState.getName());
+            println("Current state: " + currentState.getName());
+        } else {
+            println("No current state");
         }
 
         // If we have an active chained action, continue executing it
         if (activeChainedAction != null) {
             try {
-                debug("Executing chained action: " + activeChainedAction.getDesc() + "(" + activeChainedAction.getProgress() + ")");
+                println("Executing chained action: " + activeChainedAction.getDesc() + "(" + activeChainedAction.getProgress() + ")");
                 activeChainedAction.execute();
                 if (activeChainedAction.validate()) {
                     // Chain completed successfully
-                    debug("Active chained action completed successfully");
+                    println("Active chained action completed successfully");
+                    activeChainedAction = null;
+                } else if (activeChainedAction.hasExpired()) {
+                    // Chain failed, reset it
+                    println("Active chained action failed, resetting");
                     activeChainedAction = null;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                debug("Active chained action failed, aborting: " + e.getMessage());
+                println("Active chained action failed, aborting: " + e.getMessage());
                 activeChainedAction = null;
             }
         } else {
@@ -61,7 +67,7 @@ public abstract class PermissiveScript extends DelayableScript {
                 traverseAndExecute(getRootNode());
             } catch (Exception e) {
                 e.printStackTrace();
-                debug("Root task traversal failed: " + e.getMessage());
+                println("Root task traversal failed: " + e.getMessage());
             }
         }
     }
@@ -72,13 +78,13 @@ public abstract class PermissiveScript extends DelayableScript {
      */
     private void traverseAndExecute(TreeNode node) {
         if (node == null) {
-            debug("Node is null, skipping tree traversal");
+            println("Node is null, skipping tree traversal");
             return;
         }
 
         // Check if it's a ChainedActionLeaf that needs to become active
         if (node instanceof ChainedActionLeaf chainedAction && !chainedAction.validate()) {
-            debug("Chained action found, setting as active: " + chainedAction.getDesc());
+            println("Chained action found, setting as active: " + chainedAction.getDesc());
             activeChainedAction = chainedAction;
             return;
         }
@@ -86,19 +92,19 @@ public abstract class PermissiveScript extends DelayableScript {
         // Continue traversal if not a leaf node
         if (!node.isLeaf()) {
             if (node.validate()) {
-                debug("[Node] \"" + node.getDesc() + "\" SUCCESS -> " + node.successNode().getDesc());
+                println("[Node] \"" + node.getDesc() + "\" SUCCESS -> " + node.successNode().getDesc());
                 traverseAndExecute(node.successNode());
             } else {
-                debug("[Node] \"" + node.getDesc() + "\" NOT_MET -> " + node.failureNode().getDesc());
+                println("[Node] \"" + node.getDesc() + "\" NOT_MET -> " + node.failureNode().getDesc());
                 traverseAndExecute(node.failureNode());
             }
         } else { // Execute the leaf node
             try {
-                debug("Executing leaf node: " + node.getDesc());
+                println("Executing leaf node: " + node.getDesc());
                 node.execute();
             } catch (Exception e) {
                 e.printStackTrace();
-                debug("Leaf node failed: " + e.getMessage());
+                println("Leaf node failed: " + e.getMessage());
             }
         }
     }

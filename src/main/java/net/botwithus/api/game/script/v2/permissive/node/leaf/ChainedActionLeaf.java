@@ -12,6 +12,7 @@ public class ChainedActionLeaf extends LeafNode {
     private int currentActionIndex = 0;
     private int currentTicks = 0;
     private boolean validationState = false;
+    private boolean hasExpired = false;
 
     public ChainedActionLeaf(Script script, Action... actions) {
         super(script);
@@ -44,11 +45,13 @@ public class ChainedActionLeaf extends LeafNode {
                 if (currentTicks >= currentAction.timeoutTicks) {
                     // Action timed out, fail the chain
                     validationState = false;
+                    hasExpired = true;
                     currentActionIndex = 0;
                     currentTicks = 0;
                 } else {
                     // Still waiting for action to complete
                     validationState = false;
+                    hasExpired = false;
                 }
             }
         } catch (Exception e) {
@@ -56,12 +59,17 @@ public class ChainedActionLeaf extends LeafNode {
             validationState = false;
             currentActionIndex = 0;
             currentTicks = 0;
+            hasExpired = true;
         }
     }
 
     @Override
     public boolean validate() {
         return validationState;
+    }
+
+    public boolean hasExpired() {
+        return hasExpired;
     }
 
     public String getProgress() {

@@ -1,8 +1,10 @@
-package net.botwithus.api.game.hud.inventories;
+package net.botwithus.api.game.script.v2.inventories;
 
+import net.botwithus.api.game.hud.inventories.Inventory;
+import net.botwithus.api.game.script.v2.base.DelayableScript;
+import net.botwithus.rs3.game.Item;
 import net.botwithus.rs3.game.hud.interfaces.Component;
 import net.botwithus.rs3.game.hud.interfaces.Interfaces;
-import net.botwithus.rs3.game.Item;
 import net.botwithus.rs3.game.js5.types.EnumType;
 import net.botwithus.rs3.game.js5.types.configs.ConfigManager;
 import net.botwithus.rs3.game.minimenu.MiniMenu;
@@ -13,10 +15,8 @@ import net.botwithus.rs3.script.Execution;
 import net.botwithus.rs3.util.RandomGenerator;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 public final class LootInventory {
@@ -149,12 +149,15 @@ public final class LootInventory {
         return LOOT_INVENTORY.getQuantity(names);
     }
 
-    public static boolean close(boolean hotkey) {
+    public static boolean close(DelayableScript script) {
         if (!isOpen()) {
             return true;
         }
         final var button = ComponentQuery.newQuery(LOOT_INTERFACE).option("Close").results().first();
-        return button != null && button.interact("Close") && Execution.delayUntil(RandomGenerator.nextInt(600, 1800), () -> !LootInventory.isOpen());
+        var result = button != null && button.interact("Close");
+        if (result)
+            script.delayUntil(LootInventory::isOpen, 2);
+        return result;
     }
 
     public static Item getItemIn(final int index) {
@@ -204,40 +207,43 @@ public final class LootInventory {
         return Interfaces.isOpen(LOOT_INTERFACE);
     }
 
-    public static boolean take(String... names) {
+    public static boolean take(DelayableScript script, String... names) {
         var items = getItems(names);
         var result = items != null && items.size() > 0 ? getItems(names).get(0) : null;
-        return take(result);
+        return take(script, result);
     }
 
-    public static boolean take(Pattern namePattern) {
+    public static boolean take(DelayableScript script, Pattern namePattern) {
         var items = getItems(namePattern);
         var result = items != null && items.size() > 0 ? getItems(namePattern).get(0) : null;
-        return take(result);
+        return take(script, result);
     }
 
-    public static boolean take(Item item) {
+    public static boolean take(DelayableScript script, Item item) {
         if (item == null || !isOpen()) {
             return false;
         }
         int quantity = getQuantity(item.getId());
         var itemComp = ComponentQuery.newQuery(LOOT_INTERFACE).item(item.getId()).results().first();
-        return itemComp != null && itemComp.interact(1) && Execution.delayUntil(RandomGenerator.nextInt(1500, 2500), () -> quantity != getQuantity(item.getId()));
-//        return LOOT_INVENTORY.interact(item.getName()) && Execution.delayUntil(RandomGenerator.nextInt(1500, 2500), () -> quantity != getQuantity(item.getId()));
+        var result = itemComp != null && itemComp.interact(1);
+        if (result)
+            script.delayUntil(() -> quantity != getQuantity(item.getId()), 3);
+        return result;
     }
 
     public static boolean lootAll() {
-//        var component = ComponentQuery.newQuery(LOOT_INTERFACE).type(Component.Type.TEXT.getOpcode()).text("Loot All", String::contentEquals).results().first();
         var component = ComponentQuery.newQuery(LOOT_INTERFACE).type(0).componentIndex(22).results().first();
         return isOpen() && component != null && component.interact(1) && Execution.delay(RandomGenerator.nextInt(1500, 3000));
-//        return MiniMenu.interact(ComponentAction.COMPONENT.getType(), 1, -1, 106299414) && Execution.delay(RandomGenerator.nextInt(200, 400));
     }
 
-    public static boolean lootCustom() {
+    public static boolean lootCustom(DelayableScript script) {
         var component = ComponentQuery.newQuery(LOOT_INTERFACE).type(Component.Type.TEXT.getOpcode()).text("Loot Custom", String::contentEquals).results().first();
         if (component != null && isOpen()) {
             int quantity = getQuantity();
-            return component.interact("Select") && Execution.delayUntil(RandomGenerator.nextInt(1500, 3000), () -> getQuantity() == quantity);
+            var result = component.interact("Select");
+            if (result)
+                script.delayUntil(() -> getQuantity() == quantity, 4);
+            return result;
         }
         return false;
     }
