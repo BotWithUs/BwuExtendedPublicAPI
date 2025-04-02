@@ -19,7 +19,6 @@ import net.botwithus.api.util.time.Timer;
 import net.botwithus.internal.scripts.ScriptDefinition;
 import net.botwithus.rs3.script.config.ScriptConfig;
 
-
 public abstract class BwuScriptv2 extends PermissiveScript {
     public static final FluentLogger LOG = FluentLogger.forEnclosingClass();
     public Gson gson = new GsonBuilder().setPrettyPrinting().create();
