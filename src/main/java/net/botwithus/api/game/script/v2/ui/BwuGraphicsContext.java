@@ -11,6 +11,7 @@ import net.botwithus.rs3.script.ScriptConsole;
 import net.botwithus.api.util.time.Timer;
 import net.botwithus.api.util.time.enums.DurationStringFormat;
 import net.botwithus.rs3.imgui.ImGui;
+import net.botwithus.rs3.imgui.ImGuiWindowFlag;
 import net.botwithus.rs3.script.ScriptGraphicsContext;
 
 import java.util.Arrays;
@@ -274,5 +275,44 @@ public class BwuGraphicsContext extends ScriptGraphicsContext {
             ImGui.TableNextColumn();
             ImGui.Separator();
         }
+    }
+
+    @Override
+    public void drawScriptConsole() {
+        String scriptName = script.getName();
+        String windowId = "Script Console##" + scriptName;
+
+        if (ImGui.Begin(windowId, ImGuiWindowFlag.None.getValue())) {
+            ImGui.PushStyleColor(5, 0.322f, 0.494f, 0.675f, 0.400f);
+            ImGui.PushStyleColor(7, 0.322f, 0.494f, 0.675f, 0.200f);
+            ImGui.PushStyleColor(18, 0.322f, 0.494f, 0.720f, 0.800f);
+            ImGui.PushStyleColor(21, 0.322f, 0.494f, 0.675f, 0.400f);
+            
+            if (ImGui.Button("Clear")) {
+                script.getConsole().clear();
+            }
+
+            ImGui.SameLine();
+            script.getConsole().setScrollToBottom(ImGui.Checkbox("Scroll to bottom", script.getConsole().isScrollToBottom()));
+
+            if (ImGui.BeginChild("##console_lines_" + scriptName, -1.0F, -1.0F, true, 0)) {
+                for (int i = 0; i < 200; ++i) {
+                    int lineIndex = (script.getConsole().getLineIndex() + i) % 200;
+                    if (script.getConsole().getConsoleLines()[lineIndex] != null) {
+                        ImGui.Text("%s", script.getConsole().getConsoleLines()[lineIndex]);
+                    }
+                }
+
+                if (script.getConsole().isScrollToBottom()) {
+                    ImGui.SetScrollHereY(1.0F);
+                }
+
+                ImGui.EndChild();
+            }
+            
+            ImGui.PopStyleColor(4);
+        }
+
+        ImGui.End();
     }
 }
