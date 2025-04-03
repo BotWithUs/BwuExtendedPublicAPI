@@ -108,8 +108,9 @@ public class Branch extends TreeNode {
         if (successNodeC != null) {
             try {
                 successNode = successNodeC.call();
-            } catch (Exception e){
+            } catch (Exception e) {
 //                log.log(Level.SEVERE, "Failed to determine the result of the Callable<successNodeC>", e);
+                getScript().println("Failed to determine the result of the Callable<successNodeC> | " + e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
             }
         }
         return successNode;
@@ -121,8 +122,9 @@ public class Branch extends TreeNode {
         if (failureNodeC != null) {
             try {
                 failureNode = failureNodeC.call();
-            } catch (Exception e){
+            } catch (Exception e) {
 //                log.log(Level.SEVERE, "Failed to determine the result of the Callable<failureNodeC>", e);
+                getScript().println("Failed to determine the result of the Callable<failureNodeC> | " + e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
             }
         }
         return failureNode;
@@ -136,8 +138,9 @@ public class Branch extends TreeNode {
         if (interlocksC != null) {
             try {
                 interlocks = interlocksC.call();
-            } catch (Exception e){
+            } catch (Exception e) {
 //                log.log(Level.SEVERE, "Failed to determine the result of the Callable<interlocksC>", e);
+                getScript().println("Failed to determine the result of the Callable<interlocksC> | " + e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
             }
         }
         return interlocks;

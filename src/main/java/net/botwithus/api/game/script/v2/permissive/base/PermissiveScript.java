@@ -9,6 +9,7 @@ import net.botwithus.api.game.script.v2.permissive.node.leaf.ChainedActionLeaf;
 import net.botwithus.internal.scripts.ScriptDefinition;
 import net.botwithus.rs3.script.config.ScriptConfig;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -67,7 +68,7 @@ public abstract class PermissiveScript extends DelayableScript {
                 traverseAndExecute(getRootNode());
             } catch (Exception e) {
                 e.printStackTrace();
-                println("Root task traversal failed: " + e.getMessage());
+                println("Root task traversal failed: " + e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
             }
         }
     }
@@ -82,12 +83,6 @@ public abstract class PermissiveScript extends DelayableScript {
             return;
         }
 
-        // Check if it's a ChainedActionLeaf that needs to become active
-        if (node instanceof ChainedActionLeaf chainedAction && !chainedAction.validate()) {
-            println("Chained action found, setting as active: " + chainedAction.getDesc());
-            activeChainedAction = chainedAction;
-            return;
-        }
 
         // Continue traversal if not a leaf node
         if (!node.isLeaf()) {
@@ -100,8 +95,15 @@ public abstract class PermissiveScript extends DelayableScript {
             }
         } else { // Execute the leaf node
             try {
-                println("Executing leaf node: " + node.getDesc());
-                node.execute();
+                // Check if it's a ChainedActionLeaf that needs to become active
+                if (node instanceof ChainedActionLeaf chainedAction) {
+                    println("Chained action found, setting as active: " + chainedAction.getDesc());
+                    activeChainedAction = chainedAction;
+                    return;
+                } else {
+                    println("Executing leaf node: " + node.getDesc());
+                    node.execute();
+                }
             } catch (Exception e) {
                 e.printStackTrace();
                 println("Leaf node failed: " + e.getMessage());
