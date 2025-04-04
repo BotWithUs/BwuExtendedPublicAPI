@@ -1,7 +1,7 @@
 package net.botwithus.api.game.script.v2.permissive.node.leaf;
 
+import net.botwithus.api.game.script.v2.permissive.base.PermissiveScript;
 import net.botwithus.api.game.script.v2.permissive.node.LeafNode;
-import net.botwithus.rs3.script.Script;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,33 +13,47 @@ public class ChainedActionLeaf extends LeafNode {
     private int currentTicks = 0;
     private boolean validationState = false;
     private boolean hasExpired = false;
+    private PermissiveScript script;
+    private Callable<Boolean> onSuccess, onFailure;
 
-    public ChainedActionLeaf(Script script, Action... actions) {
+
+    public ChainedActionLeaf(PermissiveScript script, Action... actions) {
         super(script);
+        this.script = script;
         this.actions = new ArrayList<>(List.of(actions));
     }
 
-    public ChainedActionLeaf(Script script, String desc, Action... actions) {
+    public ChainedActionLeaf(PermissiveScript script, String desc, Action... actions) {
         super(script, desc);
+        this.script = script;
         this.actions = new ArrayList<>(List.of(actions));
     }
 
     @Override
     public void execute() {
-        if (currentActionIndex >= actions.size()) {
-            // All actions completed successfully
-            validationState = true;
-            return;
-        }
 
         Action currentAction = actions.get(currentActionIndex);
-        
+
         try {
             if (currentAction.callable.call()) {
                 // Action succeeded, move to next action
                 currentActionIndex++;
                 currentTicks = 0;
-                validationState = currentActionIndex >= actions.size();
+                validationState = currentActionIndex == actions.size();
+
+                if (validationState) {
+                    // Action succeeded, move to next action
+                    currentActionIndex = 0;
+                    script.println("[CAL]: \"" + getDesc() + "\" completed successfully");
+                    if (onSuccess != null) {
+                        try {
+                            script.println("Calling onSuccess");
+                            onSuccess.call();
+                        } catch (Exception e) {
+                            script.println("Error calling onSuccess: " + e.getMessage());
+                        }
+                    }
+                }
             } else {
                 currentTicks++;
                 if (currentTicks >= currentAction.timeoutTicks) {
@@ -48,6 +62,11 @@ public class ChainedActionLeaf extends LeafNode {
                     hasExpired = true;
                     currentActionIndex = 0;
                     currentTicks = 0;
+
+                    if (onFailure != null) {
+                        script.println("Calling onFailure");
+                        onFailure.call();
+                    }
                 } else {
                     // Still waiting for action to complete
                     validationState = false;
@@ -73,7 +92,7 @@ public class ChainedActionLeaf extends LeafNode {
     }
 
     public String getProgress() {
-        return String.format("%d/%d", currentActionIndex, actions.size());
+        return String.format("%d/%d", currentActionIndex + 1, actions.size());
     }
 
     public static class Action {
@@ -88,10 +107,11 @@ public class ChainedActionLeaf extends LeafNode {
 
     public static class Builder {
         private final List<Action> actions = new ArrayList<>();
-        private final Script script;
+        private final PermissiveScript script;
         private String description;
+        private Callable<Boolean> onSuccess, onFailure;
 
-        public Builder(Script script) {
+        public Builder(PermissiveScript script) {
             this.script = script;
         }
 
@@ -105,11 +125,24 @@ public class ChainedActionLeaf extends LeafNode {
             return this;
         }
 
+        public Builder onSuccess(Callable<Boolean> onSuccess) {
+            this.onSuccess = onSuccess;
+            return this;
+        }
+
+        public Builder onFailure(Callable<Boolean> onFailure) {
+            this.onFailure = onFailure;
+            return this;
+        }
+
         public ChainedActionLeaf build() {
             Action[] actionsArray = actions.toArray(new Action[0]);
-            return description != null ? 
+            var leaf = description != null ?
                 new ChainedActionLeaf(script, description, actionsArray) :
                 new ChainedActionLeaf(script, actionsArray);
+            leaf.onSuccess = onSuccess;
+            leaf.onFailure = onFailure;
+            return leaf;
         }
     }
 }
