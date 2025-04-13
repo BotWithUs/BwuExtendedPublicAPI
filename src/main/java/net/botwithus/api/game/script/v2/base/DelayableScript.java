@@ -25,12 +25,14 @@ public abstract class DelayableScript extends TickingScript {
             if (delayUntil != null) {
                 if (delayUntil.call() || delay <= 1) {
                     delayUntil = null;
+                    doRun();
                 } else {
                     delay--;
                 }
             } else if (delayWhile != null) {
                 if (!delayWhile.call() || delay <= 1) {
                     delayWhile = null;
+                    doRun();
                 } else {
                     delay--;
                 }

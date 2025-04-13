@@ -6,6 +6,7 @@ import java.util.concurrent.Callable;
 import net.botwithus.rs3.script.Script;
 
 public class LeafNode extends TreeNode {
+    private Script script;
     private Callable<Boolean> execute = null;
     private Runnable runnable = null;
     private boolean validate = false;
@@ -62,7 +63,12 @@ public class LeafNode extends TreeNode {
                 validate = true;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            // Print out exception type, message, and stack trace
+            script.println("[CRITICAL ERROR]: " + e.getClass().getSimpleName() + " - " + e.getMessage());
+            script.println("Stack Trace: ");
+            for (StackTraceElement element : e.getStackTrace()) {
+                script.println("    " + element.toString());
+            }
         }
     }
 
