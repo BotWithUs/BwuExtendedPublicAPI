@@ -39,7 +39,9 @@ public abstract class DelayableScript extends TickingScript {
             } else {
                 if (delay > 0)
                     delay--;
-                doRun();
+
+                if (delay <= 0)
+                    doRun();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -56,10 +58,10 @@ public abstract class DelayableScript extends TickingScript {
         delayWhile = condition;
         delay = timeoutTicks;
     }
-    public void delay(int ticks) {
+    public void delayTicks(int ticks) {
         delay = ticks;
     }
-    public void delay(int min, int max) {
+    public void delayTicks(int min, int max) {
         delay = RandomGenerator.nextInt(min, max);
     }
 }

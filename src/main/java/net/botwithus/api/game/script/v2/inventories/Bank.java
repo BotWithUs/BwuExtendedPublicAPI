@@ -17,7 +17,6 @@ import net.botwithus.rs3.game.queries.builders.components.ComponentQuery;
 import net.botwithus.rs3.game.queries.builders.items.InventoryItemQuery;
 import net.botwithus.rs3.game.queries.builders.objects.SceneObjectQuery;
 import net.botwithus.rs3.game.vars.VarManager;
-import net.botwithus.rs3.script.Execution;
 import net.botwithus.rs3.script.ScriptConsole;
 import net.botwithus.rs3.util.RandomGenerator;
 
@@ -345,7 +344,7 @@ public class Bank {
     public static boolean deposit(PermissiveScript script, Component comp, int option) {
         setTransferOption(TransferOptionType.ALL);
         var val = comp != null && comp.interact(option);
-        if (val) script.delay(RandomGenerator.nextInt(1, 2));
+        if (val) script.delayTicks(RandomGenerator.nextInt(1, 2));
         return val;
     }
 
@@ -442,7 +441,7 @@ public class Bank {
         int presetBrowsingValue = VarManager.getVarbitValue(PRESET_BROWSING_VARBIT_ID);
         if ((presetNumber >= 10 && presetBrowsingValue < 1) || (presetNumber < 10 && presetBrowsingValue > 0)) {
             MiniMenu.interact(ComponentAction.COMPONENT.getType(), 1, 100, 33882231);
-            script.delay(RandomGenerator.nextInt(1, 2));
+            script.delayTicks(RandomGenerator.nextInt(1, 2));
         }
         var result = MiniMenu.interact(ComponentAction.COMPONENT.getType(), 1, presetNumber % 9,
                 33882231);//presetComp != null && presetComp.interact("Load");
