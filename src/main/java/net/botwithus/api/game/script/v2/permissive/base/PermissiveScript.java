@@ -16,6 +16,7 @@ import java.util.Map;
 public abstract class PermissiveScript extends DelayableScript {
     private boolean debugMode = false;
     private State currentState;
+    private long runtimeTickCount = 0;
 
     // Map for states, with a name key for each state
     private final Map<String, State> states = new HashMap<>();
@@ -32,6 +33,7 @@ public abstract class PermissiveScript extends DelayableScript {
     @Override
     public void doRun() {
         println("Processing game tick");
+        runtimeTickCount++;
 
         if (!onPreTick()) {
             println("Pre-tick failed, skipping main tick logic");
@@ -113,6 +115,10 @@ public abstract class PermissiveScript extends DelayableScript {
 
     public Branch getRootNode() {
         return currentState != null ? currentState.getNode() : null;
+    }
+
+    public long getRuntimeTickCount() {
+        return runtimeTickCount;
     }
 
     /**
