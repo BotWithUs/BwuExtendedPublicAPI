@@ -213,6 +213,22 @@ public class Branch extends TreeNode {
     }
 
     /**
+     * Creates a copy of this branch with a new description
+     * @param description The new description for the branch
+     * @return A new Branch with the same interlocks and nodes but different description
+     */
+    public Branch clone(String description) {
+        return new Branch(
+                getScript(),
+                description,
+                getDefinedIn(),
+                successNode,
+                failureNode,
+                interlocks != null ? interlocks.clone() : null
+        );
+    }
+
+    /**
      * Sets the children nodes of this branch
      * @param successNode The new success node
      * @param failureNode The new failure node

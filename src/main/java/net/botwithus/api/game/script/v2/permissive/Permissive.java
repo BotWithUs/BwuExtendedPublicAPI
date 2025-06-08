@@ -1,5 +1,7 @@
 package net.botwithus.api.game.script.v2.permissive;
 
+import net.botwithus.rs3.script.ScriptConsole;
+
 import java.util.function.Supplier;
 
 public class Permissive implements Supplier<Boolean> {
@@ -21,6 +23,7 @@ public class Permissive implements Supplier<Boolean> {
             return result;
         } catch (Exception e) {
 //            script.getLogger().severe(e.getMessage() + "\nException thrown in permissive predicate: " + name);
+            ScriptConsole.println("[" + Thread.currentThread().getName() + "]: " + "[Permissive] " + name + ": Exception thrown in permissive predicate: " + e.getMessage());
             lastResult = new EvaluationResult<>(false);
             return false;
         }
