@@ -232,7 +232,7 @@ public class BwuGraphicsContext extends ScriptGraphicsContext {
             if (branch.getInterlocks() != null) {
                 int i = 0;
                 for (var interlock : branch.getInterlocks()) {
-                    boolean isActive = interlock.isActive();
+                    boolean isActive = interlock.getResultType() == ResultType.MET;
                     if (isActive) {
                         ImGui.PushStyleColor(0, Color.GREEN.getRed(), Color.GREEN.getGreen(), Color.GREEN.getBlue(), Color.GREEN.getAlpha());
                     }

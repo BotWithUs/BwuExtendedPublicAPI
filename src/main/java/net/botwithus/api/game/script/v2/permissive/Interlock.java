@@ -18,10 +18,12 @@ public class Interlock {
         for (Permissive permissive : permissives) {
             if (!permissive.get()) {
                 firstOut = permissive;
+                status = new EvaluationResult<>(false);
                 return false;
             }
         }
         firstOut = null;
+        status = new EvaluationResult<>(true);
         return true;
     }
 
