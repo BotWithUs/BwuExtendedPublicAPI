@@ -19,7 +19,7 @@ import java.util.Locale;
 
 public class BwuGraphicsContext extends ScriptGraphicsContext {
     private final BwuScriptv2 script;
-    private boolean renderOnlyActivePathCheckbox = true;
+    private boolean renderOnlyActivePathCheckbox = true, sizeDefaultSet = false;
     private String branchNameFilter = "";
 
     public BwuGraphicsContext(ScriptConsole console, BwuScriptv2 script) {
@@ -29,6 +29,13 @@ public class BwuGraphicsContext extends ScriptGraphicsContext {
 
     @Override
     public void drawSettings() {
+        if (!sizeDefaultSet) {
+            ImGui.SetWindowSize(550, 750);
+            sizeDefaultSet = true;
+        }
+
+        BwuImGuiStyle.applyBwuTheme();
+
         if (ImGui.Begin(script.getName() + " Settings | " + script.getVersion(), 0)) {
             ImGui.PushStyleColor(5, 0.322f, 0.494f,0.675f, 0.400f);
             ImGui.PushStyleColor(7, 0.322f, 0.494f,0.675f, 0.200f);
