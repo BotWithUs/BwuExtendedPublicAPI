@@ -14,7 +14,6 @@ import net.botwithus.api.game.script.v2.permissive.node.Branch;
 import net.botwithus.api.game.script.v2.ui.BwuGraphicsContext;
 import net.botwithus.api.game.script.v2.ui.interfaces.BuildableUI;
 import net.botwithus.api.game.script.v2.util.statistic.BotStat;
-import net.botwithus.api.game.script.v2.util.BreakScheduler;
 import net.botwithus.api.util.time.Stopwatch;
 import net.botwithus.api.util.time.Timer;
 import net.botwithus.internal.scripts.ScriptDefinition;
@@ -27,7 +26,6 @@ public abstract class BwuScriptv2 extends PermissiveScript {
     public final Stopwatch STOPWATCH = new Stopwatch();
     public BotStat botStatInfo = new BotStat();
     public Timer brokenSessionFailsafeTimer = new Timer(600000, 600000);
-    public BreakScheduler breakScheduler = new BreakScheduler();
 
 
     public BwuScriptv2(String scriptName, ScriptConfig scriptConfig, ScriptDefinition scriptDef) {
@@ -48,21 +46,11 @@ public abstract class BwuScriptv2 extends PermissiveScript {
         return init;
     }
 
-    @Override
-    public void doRun() {
-        if (!breakScheduler.update()) {
-            return;
-        }
-        
-        super.doRun();
-    }
-
     public void performSavePersistentData() {
         try {
             JsonObject obj = new JsonObject();
 
             savePersistentData(obj);
-            breakScheduler.saveToJson(obj);
             println("Settings: " + obj);
 
             configuration.addProperty(getName() + "|Settings", obj.toString());
@@ -77,7 +65,6 @@ public abstract class BwuScriptv2 extends PermissiveScript {
             if (getConfiguration().getProperty(settingKey) != null && !getConfiguration().getProperty(settingKey).equals("null")) {
                 var obj = gson.fromJson(getConfiguration().getProperty(settingKey), JsonObject.class);
                 loadPersistentData(obj);
-                breakScheduler.loadFromJson(obj);
             }
         } catch (Exception e) {
             LOG.atSevere().withCause(e).log("Failed to load persistent data");
