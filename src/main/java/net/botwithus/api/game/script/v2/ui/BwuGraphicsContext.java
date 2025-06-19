@@ -76,11 +76,74 @@ public class BwuGraphicsContext extends ScriptGraphicsContext {
                         ImGui.Text("Runtime: " + Timer.secondsToFormattedString(script.STOPWATCH.elapsed() / 1000, DurationStringFormat.CLOCK));
                         ImGui.Text("Interaction failsafe: " + Timer.secondsToFormattedString(script.brokenSessionFailsafeTimer.getRemainingTimeInSeconds(), DurationStringFormat.CLOCK));
                         ImGui.Text("Current Task: " + script.getCurrentState().getStatus());
+                        ImGui.Text("Break Status: " + script.breakScheduler.getStatus());
 
                         ImGui.Separator();
 
                         ImGui.Text("Execution Status: " + (script.isActive() ? "Active" : script.isPaused() ? "Paused" : "Stopped"));
                     }
+                    ImGui.EndTabItem();
+                }
+                if (ImGui.BeginTabItem("Break Handler", 0)) {
+                    ImGui.SeparatorText("Break Scheduler Configuration");
+                    
+                    boolean breakEnabled = script.breakScheduler.isEnabled();
+                    if (ImGui.Checkbox("Enable Break Scheduler", breakEnabled)) {
+                        script.breakScheduler.setEnabled(!breakEnabled);
+                    }
+                    
+                    if (script.breakScheduler.isEnabled()) {
+                        
+                        ImGui.SeparatorText("Run Duration Settings");
+                        int minRunDuration = script.breakScheduler.getMinRunDurationMinutes();
+                        int maxRunDuration = script.breakScheduler.getMaxRunDurationMinutes();
+                        
+                        minRunDuration = ImGui.InputInt("Min Run Duration (minutes)", minRunDuration);
+                        maxRunDuration = ImGui.InputInt("Max Run Duration (minutes)", maxRunDuration);
+                        
+                        script.breakScheduler.setMinRunDurationMinutes(minRunDuration);
+                        script.breakScheduler.setMaxRunDurationMinutes(maxRunDuration);
+                        
+                        
+                        ImGui.SeparatorText("Break Duration Settings");
+                        int minBreakDuration = script.breakScheduler.getMinBreakDurationMinutes();
+                        int maxBreakDuration = script.breakScheduler.getMaxBreakDurationMinutes();
+                        
+                        minBreakDuration = ImGui.InputInt("Min Break Duration (minutes)", minBreakDuration);
+                        maxBreakDuration = ImGui.InputInt("Max Break Duration (minutes)", maxBreakDuration);
+                        
+                        script.breakScheduler.setMinBreakDurationMinutes(minBreakDuration);
+                        script.breakScheduler.setMaxBreakDurationMinutes(maxBreakDuration);
+                                                
+                        ImGui.SeparatorText("Current Status");
+                        ImGui.Text("Status: " + script.breakScheduler.getStatus());
+                        
+                        if (script.breakScheduler.isInBreak()) {
+                            if (ImGui.Button("End Break Early")) {
+                                script.breakScheduler.endBreakEarly();
+                            }
+                        } else {
+                            if (ImGui.Button("Force Break Now")) {
+                                script.breakScheduler.forceBreak();
+                            }
+                        }
+                        
+                        ImGui.SameLine();
+                        if (ImGui.Button("Reset Break Stats")) {
+                            script.breakScheduler.resetStats();
+                        }
+                        
+                        ImGui.SameLine();
+                        if (ImGui.Button("Generate New Break Time")) {
+                            script.breakScheduler.generateNewBreakTime();
+                        }
+                                                
+                        ImGui.SeparatorText("Break Statistics");
+                        ImGui.Text("Total Breaks Taken: " + script.breakScheduler.getTotalBreaksTaken());
+                        long totalBreakTimeMinutes = script.breakScheduler.getTotalBreakTimeMs() / (60 * 1000);
+                        ImGui.Text("Total Break Time: " + totalBreakTimeMinutes + " minutes");
+                    }
+                    
                     ImGui.EndTabItem();
                 }
                 if (script.getVersion().startsWith("v2")) {
