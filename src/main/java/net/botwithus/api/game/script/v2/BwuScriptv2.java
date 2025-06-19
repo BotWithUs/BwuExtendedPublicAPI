@@ -34,8 +34,6 @@ public abstract class BwuScriptv2 extends PermissiveScript {
         super(scriptName, scriptConfig, scriptDef);
     }
 
-
-
     @Override
     public boolean onInitialize() {
         var init = super.onInitialize();
