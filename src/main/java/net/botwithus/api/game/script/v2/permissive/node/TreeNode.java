@@ -13,7 +13,7 @@ public abstract class TreeNode implements ITreeNode {
     private EvaluationResult<Boolean> latestValidate = new EvaluationResult<>(false);
     private String definedIn = "";
 
-    private Script script;
+    protected Script script;
     private Callable<String> desc = () -> "";
 
     public TreeNode(Script script) {

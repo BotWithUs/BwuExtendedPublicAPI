@@ -200,7 +200,7 @@ public final class LootInventory {
     }
 
     public static boolean open() {
-        return isEnabled() && MiniMenu.interact(ComponentAction.COMPONENT.getType(), 7, -1, 1477 << 16 | 7);
+        return isEnabled() && MiniMenu.interact(ComponentAction.COMPONENT.getType(), 7, -1, 96796680);
     }
 
     public static boolean isOpen() {

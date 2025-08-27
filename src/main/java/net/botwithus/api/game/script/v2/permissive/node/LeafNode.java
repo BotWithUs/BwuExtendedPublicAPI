@@ -6,7 +6,6 @@ import java.util.concurrent.Callable;
 import net.botwithus.rs3.script.Script;
 
 public class LeafNode extends TreeNode {
-    private Script script;
     private Callable<Boolean> execute = null;
     private Runnable runnable = null;
     private boolean validate = false;
