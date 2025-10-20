@@ -443,7 +443,7 @@ public class Bank {
             MiniMenu.interact(ComponentAction.COMPONENT.getType(), 1, 100, 33882231);
             script.delayTicks(RandomGenerator.nextInt(1, 2));
         }
-        var result = MiniMenu.interact(ComponentAction.COMPONENT.getType(), 1, presetNumber % 9,
+        var result = MiniMenu.interact(ComponentAction.COMPONENT.getType(), 1, ((presetNumber - 1) % 9) + 1,
                 33882231);//presetComp != null && presetComp.interact("Load");
         if (result) {
             previousLoadedPreset = presetNumber;
