@@ -88,4 +88,101 @@ public class Traverse {
         return result && Execution.delayUntil(RandomGenerator.nextInt(8000, 10000), () -> Distance.to(coordinate) < 5);
     }
 
+    /**
+     * Traverses to a location using NavPath with configurable movement abilities and distance thresholds.
+     *
+     * @param location the target coordinate to navigate to
+     * @param useDive whether to enable diving ability during traversal
+     * @param useSurge whether to enable surge ability during traversal
+     * @param disableTeleports whether to completely disable teleports regardless of distance
+     * @param destinationDistance distance threshold to consider already at destination (recommended: 2-5)
+     * @param teleportDistance distance threshold below which teleports are disabled (recommended: 20-50, ignored if disableTeleports is true)
+     * @return true if navigation was successful or destination reached, false if failed
+     */
+    public static boolean navPathTraverse(Coordinate location, boolean useDive, boolean useSurge, boolean disableTeleports, int destinationDistance, int teleportDistance) {
+        var player = Client.getLocalPlayer();
+        if (player == null) {
+            ScriptConsole.println("[Traverse#navPathTraverse]: Player is null");
+            return false;
+        }
+
+        double distance = location.distanceTo(player.getCoordinate());
+        if (distance <= destinationDistance) {
+            ScriptConsole.println("[Traverse#navPathTraverse]: Already at destination (distance: %.1f)", distance);
+            return true;
+        }
+
+        int flags = 0;
+        if (!useDive) {
+            flags |= Movement.DISABLE_DIVE;
+        }
+
+        if (useSurge) {
+            flags |= Movement.ENABLE_SURGE;
+        }
+
+        // Disable teleports if requested or if location is close
+        if (disableTeleports || (distance < teleportDistance && location.isWalkable())) {
+            flags |= Movement.DISABLE_TELEPORTS;
+        }
+
+        NavPath path = NavPath.resolve(location, flags)
+                .interrupt(event -> location.isReachable() && location.distanceTo(player.getCoordinate()) <= destinationDistance);
+
+        TraverseEvent.State moveState = Movement.traverse(path);
+
+        switch (moveState) {
+            case IDLE:
+            case CONTINUE:
+            case FINISHED:
+                ScriptConsole.println("[Traverse#navPathTraverse]: Movement successful");
+                return true;
+            case INTERRUPTED:
+                ScriptConsole.println("[Traverse#navPathTraverse]: Movement interrupted, but destination is reachable");
+                return true;
+            case NO_PATH:
+                ScriptConsole.println("[Traverse#navPathTraverse]: NavPath can't resolve the path");
+                return false;
+            default:
+                ScriptConsole.println("[Traverse#navPathTraverse]: Failed to move");
+                return false;
+        }
+    }
+
+    /**
+     * Traverses to a location using NavPath with configurable movement abilities and distance thresholds.
+     *
+     * @param location the target coordinate to navigate to
+     * @param useDive whether to enable diving ability during traversal
+     * @param useSurge whether to enable surge ability during traversal
+     * @param destinationDistance distance threshold to consider already at destination (recommended: 2-5)
+     * @param teleportDistance distance threshold below which teleports are disabled (recommended: 20-50)
+     * @return true if navigation was successful or destination reached, false if failed
+     */
+    public static boolean navPathTraverse(Coordinate location, boolean useDive, boolean useSurge, int destinationDistance, int teleportDistance) {
+        return navPathTraverse(location, useDive, useSurge, false, destinationDistance, teleportDistance);
+    }
+
+    /**
+     * Traverses to a location using NavPath with configurable movement abilities and default distance thresholds.
+     *
+     * @param location the target coordinate to navigate to
+     * @param useDive whether to enable diving ability during traversal
+     * @param useSurge whether to enable surge ability during traversal
+     * @return true if navigation was successful or destination reached, false if failed
+     */
+    public static boolean navPathTraverse(Coordinate location, boolean useDive, boolean useSurge) {
+        return navPathTraverse(location, useDive, useSurge, false, 2, 30);
+    }
+
+    /**
+     * Traverses to a location using default settings (dive enabled, surge disabled, default distances).
+     *
+     * @param location the target coordinate to navigate to
+     * @return true if navigation was successful or destination reached, false if failed
+     */
+    public static boolean navPathTraverse(Coordinate location) {
+        return navPathTraverse(location, true, false, false, 2, 30);
+    }
+
 }
