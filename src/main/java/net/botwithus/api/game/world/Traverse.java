@@ -141,8 +141,8 @@ public class Traverse {
                 ScriptConsole.println("[Traverse#navPathTraverse]: Movement interrupted, but destination is reachable");
                 return true;
             case NO_PATH:
-                ScriptConsole.println("[Traverse#navPathTraverse]: NavPath can't resolve the path");
-                return false;
+                ScriptConsole.println("[Traverse#navPathTraverse]: NavPath can't resolve the path, attempting Bresenham fallback");
+                return Traverse.bresenhamWalkTo(location, true, RandomGenerator.nextInt(12, 20));
             default:
                 ScriptConsole.println("[Traverse#navPathTraverse]: Failed to move");
                 return false;
