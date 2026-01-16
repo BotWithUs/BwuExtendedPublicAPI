@@ -106,6 +106,11 @@ public class Traverse {
             return false;
         }
 
+        if (location == null || (location.getX() == 0 && location.getY() == 0)) {
+            ScriptConsole.println("[Traverse#navPathTraverse]: Location is null or (0, 0) - area may not be mapped by NavPath");
+            return false;
+        }
+
         double distance = location.distanceTo(player.getCoordinate());
         if (distance <= destinationDistance) {
             ScriptConsole.println("[Traverse#navPathTraverse]: Already at destination (distance: %.1f)", distance);
@@ -183,6 +188,43 @@ public class Traverse {
      */
     public static boolean navPathTraverse(Coordinate location) {
         return navPathTraverse(location, true, false, false, 2, 30);
+    }
+
+    /**
+     * Traverses to an area using NavPath with configurable movement abilities and distance thresholds.
+     * Handles unmapped areas by falling back to getRandomCoordinate() when getRandomWalkableCoordinate() returns (0, 0).
+     *
+     * @param area the target area to navigate to
+     * @param useDive whether to enable diving ability during traversal
+     * @param useSurge whether to enable surge ability during traversal
+     * @param disableTeleports whether to completely disable teleports regardless of distance
+     * @param destinationDistance distance threshold to consider already at destination (recommended: 2-5)
+     * @param teleportDistance distance threshold below which teleports are disabled (recommended: 20-50, ignored if disableTeleports is true)
+     * @return true if navigation was successful or destination reached, false if failed
+     */
+    public static boolean navPathTraverse(Area area, boolean useDive, boolean useSurge, boolean disableTeleports, int destinationDistance, int teleportDistance) {
+        var coordinate = area.getRandomWalkableCoordinate();
+        if (coordinate == null || (coordinate.getX() == 0 && coordinate.getY() == 0)) {
+            ScriptConsole.println("[Traverse#navPathTraverse]: Area not mapped by NavPath, using random coordinate for Bresenham fallback");
+            coordinate = area.getRandomCoordinate();
+            if (coordinate == null) {
+                ScriptConsole.println("[Traverse#navPathTraverse]: Failed to get any coordinate from area");
+                return false;
+            }
+            // Area isn't mapped, skip NavPath and go straight to Bresenham
+            return bresenhamWalkTo(coordinate, true, RandomGenerator.nextInt(12, 20));
+        }
+        return navPathTraverse(coordinate, useDive, useSurge, disableTeleports, destinationDistance, teleportDistance);
+    }
+
+    /**
+     * Traverses to an area using NavPath with default settings.
+     *
+     * @param area the target area to navigate to
+     * @return true if navigation was successful or destination reached, false if failed
+     */
+    public static boolean navPathTraverse(Area area) {
+        return navPathTraverse(area, true, false, false, 2, 30);
     }
 
 }
