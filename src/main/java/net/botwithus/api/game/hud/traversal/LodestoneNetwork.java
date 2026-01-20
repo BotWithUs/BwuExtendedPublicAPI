@@ -6,6 +6,7 @@ import net.botwithus.rs3.game.queries.builders.components.ComponentQuery;
 public class LodestoneNetwork {
     private static final String LODESTONE_OPTION = "Lodestone Network";
     private static final String LODESTONE_OPTION_LEGACY = "Lodestone network";
+
     public static boolean isOpen() {
         return Interfaces.isOpen(1092);
     }
