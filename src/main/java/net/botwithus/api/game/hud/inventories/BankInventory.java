@@ -22,7 +22,7 @@ public class BankInventory extends Inventory {
     private static final FluentLogger log = FluentLogger.forEnclosingClass();
 
     public BankInventory() {
-        super(95, 517, 202, OPTION_MAPPER);
+        super(95, 517, 201, OPTION_MAPPER);
     }
 
     @Override
