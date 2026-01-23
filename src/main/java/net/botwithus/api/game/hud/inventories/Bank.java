@@ -116,7 +116,7 @@ public class Bank {
 //                .map(Component::doAction)
 //                .orElse(false);
         // TODO: Update to no longer use MiniMenu.doAction
-        return MiniMenu.interact(ComponentAction.COMPONENT.getType(), 1, -1, 33882430);
+        return MiniMenu.interact(ComponentAction.COMPONENT.getType(), 1, -1, 33882429);
     }
 
     public static boolean loadLastPreset() {
