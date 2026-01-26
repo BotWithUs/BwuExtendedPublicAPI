@@ -89,4 +89,81 @@ public class Traverse {
         return result;
     }
 
+    /**
+     * Traverses to a location using NavPath with configurable movement flags and blocked areas.
+     * Any area passed as blocked will be avoided by the pathfinder (walk steps, links, teleports).
+     *
+     * @param script the permissive script instance for debugging
+     * @param coordinate the target coordinate to navigate to
+     * @param flags movement flags (e.g., Movement.DISABLE_DIVE, Movement.ENABLE_SURGE, Movement.DISABLE_TELEPORTS)
+     * @param blockedAreas areas to block from navigation (walk steps, links, teleports will avoid these areas)
+     * @return true if navigation was successful, false if failed
+     */
+    public static boolean navPathTraverse(PermissiveScript script, Coordinate coordinate, int flags, Area... blockedAreas) {
+        var player = Client.getLocalPlayer();
+        if (player == null) {
+            script.debug("[Traversev2#navPathTraverse]: Player is null");
+            return false;
+        }
+
+        if (coordinate == null || (coordinate.getX() == 0 && coordinate.getY() == 0)) {
+            script.debug("[Traversev2#navPathTraverse]: Coordinate is null or (0, 0)");
+            return false;
+        }
+
+        NavPath path = NavPath.resolve(coordinate, flags, blockedAreas);
+        TraverseEvent.State moveState = Movement.traverse(path);
+
+        script.debug("[Traversev2#navPathTraverse]: Attempting to walk to " + coordinate.getX() + " | " + coordinate.getY() + " | " + moveState);
+
+        if (moveState == null || moveState == TraverseEvent.State.FAILED || moveState == TraverseEvent.State.NO_PATH) {
+            script.debug("[Traversev2#navPathTraverse]: NavPath failed, attempting Bresenham fallback");
+            return bresenhamWalkTo(script, coordinate, true, RandomGenerator.nextInt(12, 20));
+        }
+
+        return moveState == TraverseEvent.State.FINISHED || moveState == TraverseEvent.State.IDLE || moveState == TraverseEvent.State.CONTINUE;
+    }
+
+    /**
+     * Traverses to a location using NavPath with blocked areas and default flags.
+     *
+     * @param script the permissive script instance for debugging
+     * @param coordinate the target coordinate to navigate to
+     * @param blockedAreas areas to block from navigation (walk steps, links, teleports will avoid these areas)
+     * @return true if navigation was successful, false if failed
+     */
+    public static boolean navPathTraverse(PermissiveScript script, Coordinate coordinate, Area... blockedAreas) {
+        return navPathTraverse(script, coordinate, 0, blockedAreas);
+    }
+
+    /**
+     * Traverses to an area using NavPath with configurable movement flags and blocked areas.
+     *
+     * @param script the permissive script instance for debugging
+     * @param area the target area to navigate to
+     * @param flags movement flags (e.g., Movement.DISABLE_DIVE, Movement.ENABLE_SURGE, Movement.DISABLE_TELEPORTS)
+     * @param blockedAreas areas to block from navigation (walk steps, links, teleports will avoid these areas)
+     * @return true if navigation was successful, false if failed
+     */
+    public static boolean navPathTraverse(PermissiveScript script, Area area, int flags, Area... blockedAreas) {
+        var coordinate = area.getRandomWalkableCoordinate();
+        if (coordinate == null || (coordinate.getX() == 0 && coordinate.getY() == 0)) {
+            script.debug("[Traversev2#navPathTraverse]: Area not mapped, using random coordinate");
+            coordinate = area.getRandomCoordinate();
+        }
+        return navPathTraverse(script, coordinate, flags, blockedAreas);
+    }
+
+    /**
+     * Traverses to an area using NavPath with blocked areas and default flags.
+     *
+     * @param script the permissive script instance for debugging
+     * @param area the target area to navigate to
+     * @param blockedAreas areas to block from navigation (walk steps, links, teleports will avoid these areas)
+     * @return true if navigation was successful, false if failed
+     */
+    public static boolean navPathTraverse(PermissiveScript script, Area area, Area... blockedAreas) {
+        return navPathTraverse(script, area, 0, blockedAreas);
+    }
+
 }
