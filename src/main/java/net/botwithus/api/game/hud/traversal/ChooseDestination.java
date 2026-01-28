@@ -21,11 +21,11 @@ public class ChooseDestination {
     };
 
     private static final int[] COMPONENT_INDEXES = {
-            0,
-            20,
-            23,
-            26,
-            29,
+            1,
+            21,
+            24,
+            27,
+            30,
             32,
             35,
             38,
