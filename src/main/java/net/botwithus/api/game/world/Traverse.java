@@ -227,4 +227,135 @@ public class Traverse {
         return navPathTraverse(area, true, false, false, 2, 30);
     }
 
+    /**
+     * Traverses to a location using NavPath with configurable movement abilities, distance thresholds,
+     * and blocked areas. Any area passed as blocked will be avoided by the pathfinder (walk steps, links, teleports).
+     *
+     * @param location the target coordinate to navigate to
+     * @param useDive whether to enable diving ability during traversal
+     * @param useSurge whether to enable surge ability during traversal
+     * @param disableTeleports whether to completely disable teleports regardless of distance
+     * @param destinationDistance distance threshold to consider already at destination (recommended: 2-5)
+     * @param teleportDistance distance threshold below which teleports are disabled (recommended: 20-50, ignored if disableTeleports is true)
+     * @param blockedAreas areas to block from navigation (walk steps, links, teleports will avoid these areas)
+     * @return true if navigation was successful or destination reached, false if failed
+     */
+    public static boolean navPathTraverse(Coordinate location, boolean useDive, boolean useSurge, boolean disableTeleports, int destinationDistance, int teleportDistance, Area... blockedAreas) {
+        var player = Client.getLocalPlayer();
+        if (player == null) {
+            ScriptConsole.println("[Traverse#navPathTraverse]: Player is null");
+            return false;
+        }
+
+        if (location == null || (location.getX() == 0 && location.getY() == 0)) {
+            ScriptConsole.println("[Traverse#navPathTraverse]: Location is null or (0, 0) - area may not be mapped by NavPath");
+            return false;
+        }
+
+        double distance = location.distanceTo(player.getCoordinate());
+        if (distance <= destinationDistance) {
+            ScriptConsole.println("[Traverse#navPathTraverse]: Already at destination (distance: %.1f)", distance);
+            return true;
+        }
+
+        int flags = 0;
+        if (!useDive) {
+            flags |= Movement.DISABLE_DIVE;
+        }
+
+        if (useSurge) {
+            flags |= Movement.ENABLE_SURGE;
+        }
+
+        // Disable teleports if requested or if location is close
+        if (disableTeleports || (distance < teleportDistance && location.isWalkable())) {
+            flags |= Movement.DISABLE_TELEPORTS;
+        }
+
+        NavPath path = NavPath.resolve(location, flags, blockedAreas)
+                .interrupt(event -> location.isReachable() && location.distanceTo(player.getCoordinate()) <= destinationDistance);
+
+        TraverseEvent.State moveState = Movement.traverse(path);
+
+        switch (moveState) {
+            case IDLE:
+            case CONTINUE:
+            case FINISHED:
+                ScriptConsole.println("[Traverse#navPathTraverse]: Movement successful");
+                return true;
+            case INTERRUPTED:
+                ScriptConsole.println("[Traverse#navPathTraverse]: Movement interrupted, but destination is reachable");
+                return true;
+            case NO_PATH:
+                ScriptConsole.println("[Traverse#navPathTraverse]: NavPath can't resolve the path, attempting Bresenham fallback");
+                return Traverse.bresenhamWalkTo(location, true, RandomGenerator.nextInt(12, 20));
+            default:
+                ScriptConsole.println("[Traverse#navPathTraverse]: Failed to move");
+                return false;
+        }
+    }
+
+    /**
+     * Traverses to a location using NavPath with configurable movement abilities and blocked areas.
+     *
+     * @param location the target coordinate to navigate to
+     * @param useDive whether to enable diving ability during traversal
+     * @param useSurge whether to enable surge ability during traversal
+     * @param blockedAreas areas to block from navigation (walk steps, links, teleports will avoid these areas)
+     * @return true if navigation was successful or destination reached, false if failed
+     */
+    public static boolean navPathTraverse(Coordinate location, boolean useDive, boolean useSurge, Area... blockedAreas) {
+        return navPathTraverse(location, useDive, useSurge, false, 2, 30, blockedAreas);
+    }
+
+    /**
+     * Traverses to a location using NavPath with default settings and blocked areas.
+     *
+     * @param location the target coordinate to navigate to
+     * @param blockedAreas areas to block from navigation (walk steps, links, teleports will avoid these areas)
+     * @return true if navigation was successful or destination reached, false if failed
+     */
+    public static boolean navPathTraverse(Coordinate location, Area... blockedAreas) {
+        return navPathTraverse(location, true, false, false, 2, 30, blockedAreas);
+    }
+
+    /**
+     * Traverses to an area using NavPath with configurable movement abilities, distance thresholds,
+     * and blocked areas. Any area passed as blocked will be avoided by the pathfinder.
+     *
+     * @param area the target area to navigate to
+     * @param useDive whether to enable diving ability during traversal
+     * @param useSurge whether to enable surge ability during traversal
+     * @param disableTeleports whether to completely disable teleports regardless of distance
+     * @param destinationDistance distance threshold to consider already at destination (recommended: 2-5)
+     * @param teleportDistance distance threshold below which teleports are disabled (recommended: 20-50, ignored if disableTeleports is true)
+     * @param blockedAreas areas to block from navigation (walk steps, links, teleports will avoid these areas)
+     * @return true if navigation was successful or destination reached, false if failed
+     */
+    public static boolean navPathTraverse(Area area, boolean useDive, boolean useSurge, boolean disableTeleports, int destinationDistance, int teleportDistance, Area... blockedAreas) {
+        var coordinate = area.getRandomWalkableCoordinate();
+        if (coordinate == null || (coordinate.getX() == 0 && coordinate.getY() == 0)) {
+            ScriptConsole.println("[Traverse#navPathTraverse]: Area not mapped by NavPath, using random coordinate for Bresenham fallback");
+            coordinate = area.getRandomCoordinate();
+            if (coordinate == null) {
+                ScriptConsole.println("[Traverse#navPathTraverse]: Failed to get any coordinate from area");
+                return false;
+            }
+            // Area isn't mapped, skip NavPath and go straight to Bresenham
+            return bresenhamWalkTo(coordinate, true, RandomGenerator.nextInt(12, 20));
+        }
+        return navPathTraverse(coordinate, useDive, useSurge, disableTeleports, destinationDistance, teleportDistance, blockedAreas);
+    }
+
+    /**
+     * Traverses to an area using NavPath with default settings and blocked areas.
+     *
+     * @param area the target area to navigate to
+     * @param blockedAreas areas to block from navigation (walk steps, links, teleports will avoid these areas)
+     * @return true if navigation was successful or destination reached, false if failed
+     */
+    public static boolean navPathTraverse(Area area, Area... blockedAreas) {
+        return navPathTraverse(area, true, false, false, 2, 30, blockedAreas);
+    }
+
 }
