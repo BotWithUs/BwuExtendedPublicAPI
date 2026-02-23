@@ -228,7 +228,7 @@ public final class LootInventory {
 
     public static boolean lootAll() {
 //        var component = ComponentQuery.newQuery(LOOT_INTERFACE).type(Component.Type.TEXT.getOpcode()).text("Loot All", String::contentEquals).results().first();
-        var component = ComponentQuery.newQuery(LOOT_INTERFACE).type(0).componentIndex(22).results().first();
+        var component = ComponentQuery.newQuery(LOOT_INTERFACE).type(0).componentIndex(21).results().first();
         return isOpen() && component != null && component.interact(1) && Execution.delay(RandomGenerator.nextInt(1500, 3000));
 //        return MiniMenu.interact(ComponentAction.COMPONENT.getType(), 1, -1, 106299414) && Execution.delay(RandomGenerator.nextInt(200, 400));
     }
