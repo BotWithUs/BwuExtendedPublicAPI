@@ -8,7 +8,7 @@ import net.botwithus.rs3.script.Execution;
 import net.botwithus.rs3.util.RandomGenerator;
 
 public class ConfirmItemDestruction {
-    public static final int NO_ID = 77529094, YES_ID = 77529093;
+    public static final int NO_ID = 77529094, YES_ID = 77529096;
 
     public static boolean isOpen() {
         return Interfaces.isOpen(1183);
