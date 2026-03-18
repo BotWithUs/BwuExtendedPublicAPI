@@ -21,16 +21,16 @@ public class ChooseDestination {
     };
 
     private static final int[] COMPONENT_INDEXES = {
-            1,
+            14,
             21,
             24,
             27,
             30,
-            32,
-            35,
-            38,
-            41,
-            44
+            33,
+            36,
+            39,
+            42,
+            45
     };
     private static final int CAN_SELECT_TEXTURE_ID = 184741, CANNOT_SELECT_TEXTURE_ID = 18508;
 

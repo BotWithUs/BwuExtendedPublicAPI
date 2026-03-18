@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "net.botwithus.xapi"
-version = "1.2.9"
+version = "1.2.10"
 
 repositories {
     mavenLocal()
