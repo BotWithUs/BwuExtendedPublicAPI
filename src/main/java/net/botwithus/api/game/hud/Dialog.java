@@ -36,9 +36,9 @@ public class Dialog {
         if (Interfaces.isOpen(1184)) {
             return MiniMenu.interact(ComponentAction.DIALOGUE.getType(), 0, -1, 77594639);
         } else if (Interfaces.isOpen(1186)) {
-            return MiniMenu.interact(ComponentAction.DIALOGUE.getType(), 0, -1, 77725700);
+            return MiniMenu.interact(ComponentAction.DIALOGUE.getType(), 0, -1, 77725704);
         } else if (Interfaces.isOpen(1189)) {
-            return MiniMenu.interact(ComponentAction.DIALOGUE.getType(), 0, -1, 77922323);
+            return MiniMenu.interact(ComponentAction.DIALOGUE.getType(), 0, -1, 77922324);
         } else if (Interfaces.isOpen(1191)) {
             return MiniMenu.interact(ComponentAction.DIALOGUE.getType(), 0, -1, 78053391);
         }
