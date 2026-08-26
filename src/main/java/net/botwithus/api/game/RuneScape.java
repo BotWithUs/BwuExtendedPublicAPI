@@ -13,6 +13,6 @@ public class RuneScape {
     public static boolean exitToLobby() {
         return MiniMenu.interact(ComponentAction.COMPONENT.getType(), 1, 7, 93782016) &&
                 Execution.delay(600) &&
-                MiniMenu.interact(ComponentAction.COMPONENT.getType(), 1, -1, 93913156);
+                MiniMenu.interact(ComponentAction.COMPONENT.getType(), 1, -1, 93913157);
     }
 }

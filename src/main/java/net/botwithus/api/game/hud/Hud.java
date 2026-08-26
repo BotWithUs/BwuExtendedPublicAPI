@@ -21,7 +21,7 @@ public final class Hud {
         if (logout != null) {
             logout.interact("Logout");
             if (Execution.delayUntil(5000, () -> Interfaces.isOpen(1433))) {
-                return MiniMenu.interact(ComponentAction.COMPONENT.getType(), 1, -1, (1433 << 16) | 71);
+                return MiniMenu.interact(ComponentAction.COMPONENT.getType(), 1, -1, (1433 << 16) | 72);
             }
         }
         return false;
